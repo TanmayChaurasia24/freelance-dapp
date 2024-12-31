@@ -1,11 +1,15 @@
 "use client"
 
 import { Route, Routes, BrowserRouter } from "react-router-dom";
-import Home from "./pages/Home";
+import HomePage from "./pages/Home";
 function App() {
   return (
     <>
-      <Home></Home>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+      </Routes>
+    </BrowserRouter>
     </>
   );
 }
