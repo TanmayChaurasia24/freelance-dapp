@@ -12,8 +12,9 @@ export function Header() {
         <a href="/" className="text-2xl font-bold">FreeMotely</a>
         <nav className="hidden md:flex space-x-4">
           <a href="/jobs" className="hover:text-primary">Jobs</a>
+          <a href="/blogs" className="hover:text-primary">Blogs</a>
           <a href="/projects" className="hover:text-primary">Projects</a>
-          <a href="/post" className="hover:text-primary">Post a Job/Project</a>
+          <a href="/postjobs" className="hover:text-primary">Post a Job/Project</a>
         </nav>
         <div className="flex items-center space-x-4">
           <Button
