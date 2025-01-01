@@ -78,13 +78,13 @@ export function FilterSidebar({
           />
         </div>
         <div>
-          <h3 className="mb-2 font-semibold">Location</h3>
+          <h3 className="mb-2 font-semibold">Locations</h3>
           {locations.map((location) => (
             <div key={location} className="flex items-center space-x-2">
               <Checkbox
                 id={`location-${location}`}
                 checked={filters.locations.includes(location)}
-                onChange={() => handleFilterChange("locations", location)}
+                onCheckedChange={() => handleFilterChange("locations", location)}
               />
               <Label htmlFor={`location-${location}`}>{location}</Label>
             </div>
@@ -97,7 +97,7 @@ export function FilterSidebar({
               <Checkbox
                 id={`company-${company}`}
                 checked={filters.companies.includes(company)}
-                onChange={() => handleFilterChange("companies", company)}
+                onCheckedChange={() => handleFilterChange("companies", company)}
               />
               <Label htmlFor={`company-${company}`}>{company}</Label>
             </div>
@@ -110,7 +110,7 @@ export function FilterSidebar({
               <Checkbox
                 id={`jobType-${jobType}`}
                 checked={filters.jobTypes.includes(jobType)}
-                onChange={() => handleFilterChange("jobTypes", jobType)}
+                onCheckedChange={() => handleFilterChange("jobTypes", jobType)}
               />
               <Label htmlFor={`jobType-${jobType}`}>{jobType}</Label>
             </div>
