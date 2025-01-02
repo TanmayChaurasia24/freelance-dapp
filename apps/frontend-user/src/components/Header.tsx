@@ -2,15 +2,18 @@ import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Moon, Sun, Menu } from 'lucide-react';
+import { useNavigate } from "react-router-dom";
 
 export function Header() {
   const { theme, setTheme } = useTheme()
+  const navigate = useNavigate();
 
   return (
     <header className="border-b sticky top-0 z-50 bg-background">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <a href="/" className="text-2xl font-bold">FreeMotely</a>
         <nav className="hidden md:flex space-x-4">
+          <a href="/" className="hover:text-primary">Home</a>
           <a href="/jobs" className="hover:text-primary">Jobs</a>
           <a href="/blogs" className="hover:text-primary">Blogs</a>
           <a href="/projects" className="hover:text-primary">Projects</a>
@@ -25,7 +28,9 @@ export function Header() {
             {theme === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
             <span className="sr-only">Toggle theme</span>
           </Button>
-          <Button className="hidden md:inline-flex">Sign In</Button>
+          <Button onClick = {() => navigate('/signup')} className="hidden md:inline-flex">Sign Up</Button>
+          <Button onClick = {() => navigate('/login')} className="hidden md:inline-flex">Log In</Button>
+          {/* <Button onClick = {() => navigate('/signup')} className="hidden md:inline-flex">Sign In</Button> */}
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="outline" size="icon" className="md:hidden">

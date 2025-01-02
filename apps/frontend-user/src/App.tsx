@@ -6,6 +6,10 @@ import Jobs from "./pages/Jobs";
 import PostJobs from "./pages/PostJobs";
 import Blogs from "./pages/Blogs";
 import Projects from "./pages/Projects";
+import SignupPage from "./pages/Signup";
+import LoginPage from "./pages/Login";
+import ProfilePage from "./pages/profile";
+
 function App() {
   return (
     <>
@@ -16,6 +20,9 @@ function App() {
         <Route path="/postjobs" element={<PostJobs />} />
         <Route path="/blogs" element={<Blogs />} />
         <Route path="/projects" element={<Projects />} />
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
       </Routes>
     </BrowserRouter>
     </>
