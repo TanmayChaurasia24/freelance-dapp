@@ -5,8 +5,8 @@ dotenv.config();
 
 const mongourl = process.env.MONGO_URI!;
 
-const connectdb = (): any => {
-  mongoose
+const connectdb = async(): Promise<any> => {
+  await mongoose
     .connect(mongourl)
     .then(() => console.log("database connected"))
     .catch((error) => {
@@ -14,4 +14,4 @@ const connectdb = (): any => {
     });
 };
 
-export default connectdb
+export default connectdb;

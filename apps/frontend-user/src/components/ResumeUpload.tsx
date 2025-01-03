@@ -23,8 +23,7 @@ export function ResumeUpload({ currentResume }: ResumeUploadProps) {
   const handleUpload = async () => {
     if (!file) return
 
-    // Here you would typically upload the file to your server
-    // For now, we'll just simulate an upload with a timeout
+    // file upload
     await new Promise(resolve => setTimeout(resolve, 1000))
 
     toast.success("Resume uploaded")

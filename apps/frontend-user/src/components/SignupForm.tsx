@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import Cookies from "js-cookie"
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -32,8 +33,8 @@ export const formSchema = z.object({
   username: z.string().min(3, {
     message: "Username must be at least 3 characters.",
   }),
-  bio: z.string().max(160).optional(),
-  skills: z.string().optional(),
+  bio: z.string().max(160),
+  skills: z.string(),
 });
 
 export function SignupForm() {
@@ -52,16 +53,39 @@ export function SignupForm() {
     },
   });
 
-  async function onSubmit() {
+  async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true);
+    console.log(data);
+    
+    try {
+      const response = await fetch("http://localhost:3000/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      console.log(response);
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Something went wrong");
+      }
 
-    // Here you would typically send the form data to your API
-    // For now, we'll just simulate an API call with a timeout
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+      const responseData = await response.json(); 
+      console.log(responseData); 
+    
+      const token = responseData.token;
+      Cookies.set("User",token,{ expires: 2, path: "/", secure: true, sameSite: "Lax" })
 
-    setIsLoading(false);
-    toast.success("We've created your account for you.");
-    navigate("/dashboard"); // Redirect to dashboard or home page after signup
+      await response.json();
+      toast.success("We've created your account for you.");
+      navigate("/");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to create an account.");
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -74,7 +98,7 @@ export function SignupForm() {
             <FormItem>
               <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input placeholder="John Doe" {...field} />
+                <Input placeholder="Tanmay Kumar Chaurasia" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -87,7 +111,7 @@ export function SignupForm() {
             <FormItem>
               <FormLabel>Username</FormLabel>
               <FormControl>
-                <Input placeholder="johndoe" {...field} />
+                <Input placeholder="Tanmay2026" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -100,7 +124,7 @@ export function SignupForm() {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input type="email" placeholder="john@example.com" {...field} />
+                <Input type="email" placeholder="tanmay@example.com" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

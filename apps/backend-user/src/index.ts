@@ -1,10 +1,17 @@
 import express from "express";
 import connectdb from "./db";
+import user from "./routes/user.route";
+import cors from "cors";
 
-const app = express();
 const port = 3000;
+const app = express();
 
-connectdb()
+app.use(express.json());
+app.use(cors());
+
+connectdb();
+
+app.use("/api/auth", user);
 
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
