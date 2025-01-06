@@ -5,6 +5,7 @@ import { Moon, Sun, Menu } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
+import { CgProfile } from "react-icons/cg";
 
 export function Header() {
   const { theme, setTheme } = useTheme();
@@ -16,7 +17,12 @@ export function Header() {
     if(Cookies.get("User")) {
       setcookie(true);
     }
+
   },[cookie])
+
+  const handleProfileClick = () => {
+    navigate("/profile")
+  }
 
   return (
     <header className="border-b sticky top-0 z-50 bg-background">
@@ -75,6 +81,7 @@ export function Header() {
                 Cookies.remove("User")
                 setcookie(false);
               }}>Log Out</Button>
+              <CgProfile className="h-[30px] w-[30px] cursor-pointer" onClick={handleProfileClick}/>
             </>
           )}
 
