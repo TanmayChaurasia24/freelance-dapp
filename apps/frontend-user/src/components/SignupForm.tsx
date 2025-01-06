@@ -5,7 +5,9 @@ import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import Cookies from "js-cookie"
+import Cookies from "js-cookie";
+import axios from "axios";
+import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -18,8 +20,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { toast } from "react-hot-toast";
 
+// Schema definition using Zod
 export const formSchema = z.object({
   name: z.string().min(2, {
     message: "Name must be at least 2 characters.",
@@ -53,40 +55,48 @@ export function SignupForm() {
     },
   });
 
-  async function onSubmit(data: z.infer<typeof formSchema>) {
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
     setIsLoading(true);
-    console.log(data);
-    
+    console.log("Form data submitted:", data);
+
     try {
-      const response = await fetch("http://localhost:3000/api/auth/signup", {
-        method: "POST",
+      const response = await axios.post("http://localhost:3000/api/auth/signup", data, {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
       });
-      console.log(response);
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Something went wrong");
+
+      if (!response.data) {
+        throw new Error("No response data received");
       }
 
-      const responseData = await response.json(); 
-      console.log(responseData); 
-    
-      const token = responseData.token;
-      Cookies.set("User",token,{ expires: 2, path: "/", secure: true, sameSite: "Lax" })
+      // @ts-ignore
+      const { token } = response.data;
+      console.log("Token received:", token);
 
-      await response.json();
+      // Set the token in cookies
+      Cookies.set("User", token, {
+        expires: 2,
+        path: "/",
+        secure: true,
+        sameSite: "Lax",
+      });
+
       toast.success("We've created your account for you.");
       navigate("/");
     } catch (error: any) {
-      toast.error(error.message || "Failed to create an account.");
+      console.error("Error during signup:", error);
+      if (error.response) {
+        // Backend returned an error response
+        toast.error(error.response.data.message || "Failed to create an account.");
+      } else {
+        // Network or other errors
+        toast.error(error.message || "An unexpected error occurred.");
+      }
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   return (
     <Form {...form}>
@@ -143,7 +153,6 @@ export function SignupForm() {
             </FormItem>
           )}
         />
-
         <FormField
           control={form.control}
           name="bio"
@@ -157,9 +166,7 @@ export function SignupForm() {
                   {...field}
                 />
               </FormControl>
-              <FormDescription>
-                You can always update this later.
-              </FormDescription>
+              <FormDescription>You can always update this later.</FormDescription>
               <FormMessage />
             </FormItem>
           )}

@@ -13,10 +13,10 @@ export function Header() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if(Cookies.get("user")) {
+    if(Cookies.get("User")) {
       setcookie(true);
     }
-  },[])
+  },[cookie])
 
   return (
     <header className="border-b sticky top-0 z-50 bg-background">
@@ -71,7 +71,10 @@ export function Header() {
             </>
           ) : (
             <>
-              <Button className="hidden md:inline-flex" onClick={() => Cookies.remove("User")}>Log Out</Button>
+              <Button className="hidden md:inline-flex" onClick={() => {
+                Cookies.remove("User")
+                setcookie(false);
+              }}>Log Out</Button>
             </>
           )}
 
