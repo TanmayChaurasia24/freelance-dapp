@@ -1,13 +1,46 @@
 'use client'
 
-import React, { useState } from 'react'
+import { useEffect, useState } from 'react'
+import axios from 'axios'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Pencil, MapPin, Briefcase, School, Home, Bell, MessageSquare, User, Search } from 'lucide-react'
+import { Pencil, MapPin } from 'lucide-react'
 import { Header } from '@/components/Header'
+import toast from 'react-hot-toast'
+import Cookies from 'js-cookie'
+
+interface UserProfile {
+  name: string;
+  title: string;
+  email: string;
+  bio: string;
+  skills: string[];
+  location: {
+      country: string;
+      state: string;
+      city: string;
+  };
+  education: {
+      degree: string;
+      school: string;
+      duration: string;
+  }[];
+  experience: {
+      position: string;
+      company: string;
+      duration: string;
+      description: string;
+  }[];
+  socialLinks: {
+      linkedin: string;
+      github: string;
+      portfolio: string;
+  };
+}
+
 
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState<Record<string, boolean>>({
@@ -16,40 +49,27 @@ export default function ProfilePage() {
     experience: false,
     education: false,
     skills: false,
+    socialLinks: false
   })
 
   const [profile, setProfile] = useState({
-    name: "John Doe",
-    title: "Software Engineer",
-    location: "San Francisco Bay Area",
-    about: "Passionate software engineer with 5+ years of experience in developing scalable web applications. Skilled in JavaScript, React, Node.js, and cloud technologies. Always eager to learn and tackle new challenges.",
-    experiences: [
-      {
-        title: "Senior Software Engineer",
-        company: "Tech Company",
-        duration: "2020 - Present",
-        description: "Leading development of scalable web applications using React and Node.js."
-      },
-      {
-        title: "Software Engineer",
-        company: "Startup Inc.",
-        duration: "2018 - 2020",
-        description: "Developed and maintained full-stack applications using JavaScript technologies."
-      }
-    ],
-    education: [
-      {
-        degree: "Master of Science in Computer Science",
-        school: "University of Technology",
-        duration: "2016 - 2018"
-      },
-      {
-        degree: "Bachelor of Science in Computer Science",
-        school: "State University",
-        duration: "2012 - 2016"
-      }
-    ],
-    skills: ["JavaScript", "React", "Node.js", "TypeScript", "GraphQL", "AWS", "Docker", "Git", "Agile Methodologies"]
+    name: "",
+    title: "",
+    email: "",
+    bio: "",
+    skills: [] as string[],
+    location: {
+      country: "",
+      state: "",
+      city: ""
+    },
+    education: [] as { degree: string; school: string; duration: string }[],
+    experience: [] as { company: string; position: string; duration: string; description: string }[],
+    socialLinks: {
+      linkedin: "",
+      github: "",
+      portfolio: ""
+    }
   })
 
   const [newSkill, setNewSkill] = useState("")
@@ -58,9 +78,30 @@ export default function ProfilePage() {
     setIsEditing(prev => ({ ...prev, [section]: !prev[section] }))
   }
 
-  const handleSave = (section: string) => {
-    // In a real application, you would send this data to your backend
-    setIsEditing(prev => ({ ...prev, [section]: false }))
+  const handleSave = async (section: string) => {
+    try {
+      const userToken = Cookies.get("User");
+      if (!userToken) {
+        toast.error("User token not found. Please log in again.");
+        return;
+      }
+
+      const response = await axios.put("http://localhost:3000/api/user/update", {
+        [section]: profile[section as keyof typeof profile]
+      }, {
+        headers: { Authorization: `Bearer ${userToken}` }
+      });
+
+      if (response.data) {
+        toast.success("Profile updated successfully!");
+        setIsEditing(prev => ({ ...prev, [section]: false }))
+      } else {
+        toast.error("Failed to update profile. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toast.error("An error occurred. Please try again later.");
+    }
   }
 
   const updateProfile = (section: string, value: any) => {
@@ -81,11 +122,51 @@ export default function ProfilePage() {
     }))
   }
 
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const usertoken = Cookies.get("User");
+        if (!usertoken) {
+          console.log("User token is not present");
+          return;
+        }
+        console.log(usertoken);
+        
+        const response = await axios.get<UserProfile>("http://localhost:3000/api/auth/info", {
+          headers: { Authorization: `Bearer ${usertoken}` }
+      });
+      
+
+        if (response.data) {
+          const userData = response.data;
+          setProfile({
+            name: userData.name || "",
+            title: userData.title || "",
+            email: userData.email || "",
+            bio: userData.bio || "",
+            skills: userData.skills || [],
+            location: userData.location || { country: "", state: "", city: "" },
+            education: userData.education || [],
+            experience: userData.experience || [],
+            socialLinks: userData.socialLinks || { linkedin: "", github: "", portfolio: "" }
+          });
+        } else {
+          toast.error("Failed to fetch user data. Please try again.");
+        }
+      } catch (error) {
+        console.error("Error fetching user info:", error);
+        toast.error("An error occurred. Please try again later.");
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-100">
-      <Header/>
+      <Header />
 
-      <main className="container mx-auto w-[50vw] px-4 py-8">
+      <main className="container mx-auto px-4 py-8 max-w-4xl">
         <Card className="mb-6">
           <CardContent className="pt-6">
             <div className="flex justify-end mb-4">
@@ -109,9 +190,9 @@ export default function ProfilePage() {
                       placeholder="Title"
                     />
                     <Input 
-                      value={profile.location} 
-                      onChange={(e) => updateProfile('location', e.target.value)}
-                      placeholder="Location"
+                      value={profile.location.city} 
+                      onChange={(e) => updateProfile('location', { ...profile.location, city: e.target.value })}
+                      placeholder="City"
                     />
                   </div>
                 ) : (
@@ -119,7 +200,7 @@ export default function ProfilePage() {
                     <h1 className="text-2xl font-bold mb-2">{profile.name}</h1>
                     <p className="text-gray-600 mb-2">{profile.title}</p>
                     <p className="text-gray-500 mb-4 flex items-center justify-center md:justify-start">
-                      <MapPin size={16} className="mr-1" /> {profile.location}
+                      <MapPin size={16} className="mr-1" /> {profile.location.city}
                     </p>
                   </>
                 )}
@@ -150,8 +231,8 @@ export default function ProfilePage() {
             {isEditing.about ? (
               <div>
                 <Textarea 
-                  value={profile.about} 
-                  onChange={(e) => updateProfile('about', e.target.value)}
+                  value={profile.bio} 
+                  onChange={(e) => updateProfile('bio', e.target.value)}
                   rows={4}
                 />
                 <div className="mt-4 flex justify-end space-x-2">
@@ -160,7 +241,7 @@ export default function ProfilePage() {
                 </div>
               </div>
             ) : (
-              <p>{profile.about}</p>
+              <p>{profile.bio}</p>
             )}
           </CardContent>
         </Card>
@@ -173,16 +254,16 @@ export default function ProfilePage() {
             </Button>
           </CardHeader>
           <CardContent>
-            {profile.experiences.map((exp, index) => (
+            {profile.experience.map((exp, index) => (
               <div key={index} className={index > 0 ? "mt-4" : ""}>
                 {isEditing.experience ? (
                   <>
                     <Input 
-                      value={exp.title} 
+                      value={exp.position} 
                       onChange={(e) => {
-                        const newExperiences = [...profile.experiences]
-                        newExperiences[index].title = e.target.value
-                        updateProfile('experiences', newExperiences)
+                        const newExperiences = [...profile.experience]
+                        newExperiences[index].position = e.target.value
+                        updateProfile('experience', newExperiences)
                       }}
                       className="mb-2"
                       placeholder="Job Title"
@@ -190,9 +271,9 @@ export default function ProfilePage() {
                     <Input 
                       value={exp.company} 
                       onChange={(e) => {
-                        const newExperiences = [...profile.experiences]
+                        const newExperiences = [...profile.experience]
                         newExperiences[index].company = e.target.value
-                        updateProfile('experiences', newExperiences)
+                        updateProfile('experience', newExperiences)
                       }}
                       className="mb-2"
                       placeholder="Company"
@@ -200,9 +281,9 @@ export default function ProfilePage() {
                     <Input 
                       value={exp.duration} 
                       onChange={(e) => {
-                        const newExperiences = [...profile.experiences]
+                        const newExperiences = [...profile.experience]
                         newExperiences[index].duration = e.target.value
-                        updateProfile('experiences', newExperiences)
+                        updateProfile('experience', newExperiences)
                       }}
                       className="mb-2"
                       placeholder="Duration"
@@ -210,16 +291,16 @@ export default function ProfilePage() {
                     <Textarea 
                       value={exp.description} 
                       onChange={(e) => {
-                        const newExperiences = [...profile.experiences]
+                        const newExperiences = [...profile.experience]
                         newExperiences[index].description = e.target.value
-                        updateProfile('experiences', newExperiences)
+                        updateProfile('experience', newExperiences)
                       }}
                       placeholder="Description"
                     />
                   </>
                 ) : (
                   <>
-                    <h3 className="text-lg font-semibold">{exp.title}</h3>
+                    <h3 className="text-lg font-semibold">{exp.position}</h3>
                     <p className="text-gray-600">{exp.company}</p>
                     <p className="text-gray-500 text-sm">{exp.duration}</p>
                     <p className="mt-2">{exp.description}</p>

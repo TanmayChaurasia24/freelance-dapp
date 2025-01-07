@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken"
+import jwt, { JwtPayload } from "jsonwebtoken"
 import { Request, Response } from "express";
 import userModel from "../model/user.model";
 import bcrypt from "bcryptjs"
@@ -90,6 +90,42 @@ export const login = async(req: Request, res: Response): Promise<any> => {
         return res.status(500).json({
             message: "error while login",
             result: error.message
+        })
+    }
+}
+
+export const extractUserInformationn = async (req: Request, res: Response): Promise<any> => {
+    let usertoken = req.headers.authorization;
+
+    if (!usertoken || !usertoken.startsWith("Bearer ")) {
+        return res.status(401).json({ error: "Authorization token missing or invalid" });
+    }
+
+    usertoken = usertoken.split(" ")[1];
+
+    try {   
+        const decoded = jwt.verify(usertoken, process.env.JWT_SECRET!) as JwtPayload;
+        const username = decoded.id;
+
+        console.log("username extracted from token is: " + username);
+        
+        const tokenUser = await userModel.findOne({username});
+
+        if(!tokenUser) {
+            return res.status(400).json({
+                message: "username not found"
+            })
+        }
+
+        return res.status(201).json({
+            message: "user information extracted successfully",
+            user: tokenUser
+        });
+
+    } catch (error: any) {
+        return res.status(500).json({
+            message: "error while extracting user information from token",
+            errormessage: error.message
         })
     }
 }
