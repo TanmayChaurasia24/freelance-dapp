@@ -41,7 +41,7 @@ export const signup = async(req: Request, res: Response): Promise<any> => {
 
         console.log("user created: ", newuser);       
 
-        const token = jwt.sign({id: newuser._id},process.env.JWT_SECRET!, {expiresIn: "2d"})
+        const token = jwt.sign({id: newuser.username},process.env.JWT_SECRET!, {expiresIn: "2d"})
         return res.status(201).json({
             message: "user created successfully",
             token: token,

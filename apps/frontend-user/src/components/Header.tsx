@@ -80,6 +80,7 @@ export function Header() {
               <Button className="hidden md:inline-flex" onClick={() => {
                 Cookies.remove("User")
                 setcookie(false);
+                navigate("/");
               }}>Log Out</Button>
               <CgProfile className="h-[30px] w-[30px] cursor-pointer" onClick={handleProfileClick}/>
             </>

@@ -1,16 +1,16 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import axios from 'axios'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Pencil, MapPin } from 'lucide-react'
-import { Header } from '@/components/Header'
-import toast from 'react-hot-toast'
-import Cookies from 'js-cookie'
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Pencil, MapPin } from "lucide-react";
+import { Header } from "@/components/Header";
+import toast from "react-hot-toast";
+import Cookies from "js-cookie";
 
 interface UserProfile {
   name: string;
@@ -19,28 +19,27 @@ interface UserProfile {
   bio: string;
   skills: string[];
   location: {
-      country: string;
-      state: string;
-      city: string;
+    country: string;
+    state: string;
+    city: string;
   };
   education: {
-      degree: string;
-      school: string;
-      duration: string;
+    degree: string;
+    school: string;
+    duration: string;
   }[];
   experience: {
-      position: string;
-      company: string;
-      duration: string;
-      description: string;
+    position: string;
+    company: string;
+    duration: string;
+    description: string;
   }[];
   socialLinks: {
-      linkedin: string;
-      github: string;
-      portfolio: string;
+    linkedin: string;
+    github: string;
+    portfolio: string;
   };
 }
-
 
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState<Record<string, boolean>>({
@@ -49,8 +48,8 @@ export default function ProfilePage() {
     experience: false,
     education: false,
     skills: false,
-    socialLinks: false
-  })
+    socialLinks: false,
+  });
 
   const [profile, setProfile] = useState({
     name: "",
@@ -61,22 +60,27 @@ export default function ProfilePage() {
     location: {
       country: "",
       state: "",
-      city: ""
+      city: "",
     },
     education: [] as { degree: string; school: string; duration: string }[],
-    experience: [] as { company: string; position: string; duration: string; description: string }[],
+    experience: [] as {
+      company: string;
+      position: string;
+      duration: string;
+      description: string;
+    }[],
     socialLinks: {
       linkedin: "",
       github: "",
-      portfolio: ""
-    }
-  })
+      portfolio: "",
+    },
+  });
 
-  const [newSkill, setNewSkill] = useState("")
+  const [newSkill, setNewSkill] = useState("");
 
   const toggleEdit = (section: string) => {
-    setIsEditing(prev => ({ ...prev, [section]: !prev[section] }))
-  }
+    setIsEditing((prev) => ({ ...prev, [section]: !prev[section] }));
+  };
 
   const handleSave = async (section: string) => {
     try {
@@ -86,15 +90,19 @@ export default function ProfilePage() {
         return;
       }
 
-      const response = await axios.put("http://localhost:3000/api/user/update", {
-        [section]: profile[section as keyof typeof profile]
-      }, {
-        headers: { Authorization: `Bearer ${userToken}` }
-      });
+      const response = await axios.put(
+        "http://localhost:3000/api/user/update",
+        {
+          [section]: profile[section as keyof typeof profile],
+        },
+        {
+          headers: { Authorization: `Bearer ${userToken}` },
+        }
+      );
 
       if (response.data) {
         toast.success("Profile updated successfully!");
-        setIsEditing(prev => ({ ...prev, [section]: false }))
+        setIsEditing((prev) => ({ ...prev, [section]: false }));
       } else {
         toast.error("Failed to update profile. Please try again.");
       }
@@ -102,25 +110,25 @@ export default function ProfilePage() {
       console.error("Error updating profile:", error);
       toast.error("An error occurred. Please try again later.");
     }
-  }
+  };
 
   const updateProfile = (section: string, value: any) => {
-    setProfile(prev => ({ ...prev, [section]: value }))
-  }
+    setProfile((prev) => ({ ...prev, [section]: value }));
+  };
 
   const addSkill = () => {
     if (newSkill && !profile.skills.includes(newSkill)) {
-      setProfile(prev => ({ ...prev, skills: [...prev.skills, newSkill] }))
-      setNewSkill("")
+      setProfile((prev) => ({ ...prev, skills: [...prev.skills, newSkill] }));
+      setNewSkill("");
     }
-  }
+  };
 
   const removeSkill = (skillToRemove: string) => {
-    setProfile(prev => ({
+    setProfile((prev) => ({
       ...prev,
-      skills: prev.skills.filter(skill => skill !== skillToRemove)
-    }))
-  }
+      skills: prev.skills.filter((skill) => skill !== skillToRemove),
+    }));
+  };
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -131,14 +139,21 @@ export default function ProfilePage() {
           return;
         }
         console.log(usertoken);
-        
-        const response = await axios.get<UserProfile>("http://localhost:3000/api/auth/info", {
-          headers: { Authorization: `Bearer ${usertoken}` }
-      });
-      
+
+        const response = await axios.get<UserProfile>(
+          "http://localhost:3000/api/auth/info",
+          {
+            headers: { Authorization: `Bearer ${usertoken}` },
+          }
+        );
+
+        console.log("response from backend is: ", response);
 
         if (response.data) {
-          const userData = response.data;
+          //@ts-ignore
+          const userData = response.data.user;
+          console.log("user data is: ", userData);
+
           setProfile({
             name: userData.name || "",
             title: userData.title || "",
@@ -148,8 +163,13 @@ export default function ProfilePage() {
             location: userData.location || { country: "", state: "", city: "" },
             education: userData.education || [],
             experience: userData.experience || [],
-            socialLinks: userData.socialLinks || { linkedin: "", github: "", portfolio: "" }
+            socialLinks: userData.socialLinks || {
+              linkedin: "",
+              github: "",
+              portfolio: "",
+            },
           });
+          console.log("user profile is: ", profile);
         } else {
           toast.error("Failed to fetch user data. Please try again.");
         }
@@ -170,28 +190,41 @@ export default function ProfilePage() {
         <Card className="mb-6">
           <CardContent className="pt-6">
             <div className="flex justify-end mb-4">
-              <Button variant="ghost" size="icon" onClick={() => toggleEdit('summary')}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => toggleEdit("summary")}
+              >
                 <Pencil size={16} />
               </Button>
             </div>
             <div className="flex flex-col md:flex-row items-center md:items-start">
-              <img src="/placeholder.svg?height=150&width=150" alt="Profile" className="rounded-full w-32 h-32 mb-4 md:mb-0 md:mr-6" />
+              <img
+                src="/placeholder.svg?height=150&width=150"
+                alt="Profile"
+                className="rounded-full w-32 h-32 mb-4 md:mb-0 md:mr-6"
+              />
               <div className="text-center md:text-left flex-grow">
                 {isEditing.summary ? (
                   <div className="space-y-2">
-                    <Input 
-                      value={profile.name} 
-                      onChange={(e) => updateProfile('name', e.target.value)}
+                    <Input
+                      value={profile.name}
+                      onChange={(e) => updateProfile("name", e.target.value)}
                       placeholder="Name"
                     />
-                    <Input 
-                      value={profile.title} 
-                      onChange={(e) => updateProfile('title', e.target.value)}
+                    <Input
+                      value={profile.title}
+                      onChange={(e) => updateProfile("title", e.target.value)}
                       placeholder="Title"
                     />
-                    <Input 
-                      value={profile.location.city} 
-                      onChange={(e) => updateProfile('location', { ...profile.location, city: e.target.value })}
+                    <Input
+                      value={profile.location.city}
+                      onChange={(e) =>
+                        updateProfile("location", {
+                          ...profile.location,
+                          city: e.target.value,
+                        })
+                      }
                       placeholder="City"
                     />
                   </div>
@@ -200,7 +233,8 @@ export default function ProfilePage() {
                     <h1 className="text-2xl font-bold mb-2">{profile.name}</h1>
                     <p className="text-gray-600 mb-2">{profile.title}</p>
                     <p className="text-gray-500 mb-4 flex items-center justify-center md:justify-start">
-                      <MapPin size={16} className="mr-1" /> {profile.location.city}
+                      <MapPin size={16} className="mr-1" />{" "}
+                      {profile.location.city}
                     </p>
                   </>
                 )}
@@ -213,8 +247,10 @@ export default function ProfilePage() {
             </div>
             {isEditing.summary && (
               <div className="mt-4 flex justify-end space-x-2">
-                <Button variant="outline" onClick={() => toggleEdit('summary')}>Cancel</Button>
-                <Button onClick={() => handleSave('summary')}>Save</Button>
+                <Button variant="outline" onClick={() => toggleEdit("summary")}>
+                  Cancel
+                </Button>
+                <Button onClick={() => handleSave("summary")}>Save</Button>
               </div>
             )}
           </CardContent>
@@ -223,21 +259,27 @@ export default function ProfilePage() {
         <Card className="mb-6">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>About</CardTitle>
-            <Button variant="ghost" size="icon" onClick={() => toggleEdit('about')}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => toggleEdit("about")}
+            >
               <Pencil size={16} />
             </Button>
           </CardHeader>
           <CardContent>
             {isEditing.about ? (
               <div>
-                <Textarea 
-                  value={profile.bio} 
-                  onChange={(e) => updateProfile('bio', e.target.value)}
+                <Textarea
+                  value={profile.bio}
+                  onChange={(e) => updateProfile("bio", e.target.value)}
                   rows={4}
                 />
                 <div className="mt-4 flex justify-end space-x-2">
-                  <Button variant="outline" onClick={() => toggleEdit('about')}>Cancel</Button>
-                  <Button onClick={() => handleSave('about')}>Save</Button>
+                  <Button variant="outline" onClick={() => toggleEdit("about")}>
+                    Cancel
+                  </Button>
+                  <Button onClick={() => handleSave("about")}>Save</Button>
                 </div>
               </div>
             ) : (
@@ -249,7 +291,11 @@ export default function ProfilePage() {
         <Card className="mb-6">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Experience</CardTitle>
-            <Button variant="ghost" size="icon" onClick={() => toggleEdit('experience')}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => toggleEdit("experience")}
+            >
               <Pencil size={16} />
             </Button>
           </CardHeader>
@@ -258,42 +304,42 @@ export default function ProfilePage() {
               <div key={index} className={index > 0 ? "mt-4" : ""}>
                 {isEditing.experience ? (
                   <>
-                    <Input 
-                      value={exp.position} 
+                    <Input
+                      value={exp.position}
                       onChange={(e) => {
-                        const newExperiences = [...profile.experience]
-                        newExperiences[index].position = e.target.value
-                        updateProfile('experience', newExperiences)
+                        const newExperiences = [...profile.experience];
+                        newExperiences[index].position = e.target.value;
+                        updateProfile("experience", newExperiences);
                       }}
                       className="mb-2"
                       placeholder="Job Title"
                     />
-                    <Input 
-                      value={exp.company} 
+                    <Input
+                      value={exp.company}
                       onChange={(e) => {
-                        const newExperiences = [...profile.experience]
-                        newExperiences[index].company = e.target.value
-                        updateProfile('experience', newExperiences)
+                        const newExperiences = [...profile.experience];
+                        newExperiences[index].company = e.target.value;
+                        updateProfile("experience", newExperiences);
                       }}
                       className="mb-2"
                       placeholder="Company"
                     />
-                    <Input 
-                      value={exp.duration} 
+                    <Input
+                      value={exp.duration}
                       onChange={(e) => {
-                        const newExperiences = [...profile.experience]
-                        newExperiences[index].duration = e.target.value
-                        updateProfile('experience', newExperiences)
+                        const newExperiences = [...profile.experience];
+                        newExperiences[index].duration = e.target.value;
+                        updateProfile("experience", newExperiences);
                       }}
                       className="mb-2"
                       placeholder="Duration"
                     />
-                    <Textarea 
-                      value={exp.description} 
+                    <Textarea
+                      value={exp.description}
                       onChange={(e) => {
-                        const newExperiences = [...profile.experience]
-                        newExperiences[index].description = e.target.value
-                        updateProfile('experience', newExperiences)
+                        const newExperiences = [...profile.experience];
+                        newExperiences[index].description = e.target.value;
+                        updateProfile("experience", newExperiences);
                       }}
                       placeholder="Description"
                     />
@@ -310,8 +356,13 @@ export default function ProfilePage() {
             ))}
             {isEditing.experience && (
               <div className="mt-4 flex justify-end space-x-2">
-                <Button variant="outline" onClick={() => toggleEdit('experience')}>Cancel</Button>
-                <Button onClick={() => handleSave('experience')}>Save</Button>
+                <Button
+                  variant="outline"
+                  onClick={() => toggleEdit("experience")}
+                >
+                  Cancel
+                </Button>
+                <Button onClick={() => handleSave("experience")}>Save</Button>
               </div>
             )}
           </CardContent>
@@ -320,7 +371,11 @@ export default function ProfilePage() {
         <Card className="mb-6">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Education</CardTitle>
-            <Button variant="ghost" size="icon" onClick={() => toggleEdit('education')}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => toggleEdit("education")}
+            >
               <Pencil size={16} />
             </Button>
           </CardHeader>
@@ -329,32 +384,32 @@ export default function ProfilePage() {
               <div key={index} className={index > 0 ? "mt-4" : ""}>
                 {isEditing.education ? (
                   <>
-                    <Input 
-                      value={edu.degree} 
+                    <Input
+                      value={edu.degree}
                       onChange={(e) => {
-                        const newEducation = [...profile.education]
-                        newEducation[index].degree = e.target.value
-                        updateProfile('education', newEducation)
+                        const newEducation = [...profile.education];
+                        newEducation[index].degree = e.target.value;
+                        updateProfile("education", newEducation);
                       }}
                       className="mb-2"
                       placeholder="Degree"
                     />
-                    <Input 
-                      value={edu.school} 
+                    <Input
+                      value={edu.school}
                       onChange={(e) => {
-                        const newEducation = [...profile.education]
-                        newEducation[index].school = e.target.value
-                        updateProfile('education', newEducation)
+                        const newEducation = [...profile.education];
+                        newEducation[index].school = e.target.value;
+                        updateProfile("education", newEducation);
                       }}
                       className="mb-2"
                       placeholder="School"
                     />
-                    <Input 
-                      value={edu.duration} 
+                    <Input
+                      value={edu.duration}
                       onChange={(e) => {
-                        const newEducation = [...profile.education]
-                        newEducation[index].duration = e.target.value
-                        updateProfile('education', newEducation)
+                        const newEducation = [...profile.education];
+                        newEducation[index].duration = e.target.value;
+                        updateProfile("education", newEducation);
                       }}
                       placeholder="Duration"
                     />
@@ -370,8 +425,13 @@ export default function ProfilePage() {
             ))}
             {isEditing.education && (
               <div className="mt-4 flex justify-end space-x-2">
-                <Button variant="outline" onClick={() => toggleEdit('education')}>Cancel</Button>
-                <Button onClick={() => handleSave('education')}>Save</Button>
+                <Button
+                  variant="outline"
+                  onClick={() => toggleEdit("education")}
+                >
+                  Cancel
+                </Button>
+                <Button onClick={() => handleSave("education")}>Save</Button>
               </div>
             )}
           </CardContent>
@@ -380,7 +440,11 @@ export default function ProfilePage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Skills</CardTitle>
-            <Button variant="ghost" size="icon" onClick={() => toggleEdit('skills')}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => toggleEdit("skills")}
+            >
               <Pencil size={16} />
             </Button>
           </CardHeader>
@@ -390,7 +454,7 @@ export default function ProfilePage() {
                 <Badge key={index} variant="secondary">
                   {skill}
                   {isEditing.skills && (
-                    <button 
+                    <button
                       className="ml-2 text-red-500"
                       onClick={() => removeSkill(skill)}
                     >
@@ -403,7 +467,7 @@ export default function ProfilePage() {
             {isEditing.skills && (
               <div className="mt-4">
                 <div className="flex gap-2 mb-4">
-                  <Input 
+                  <Input
                     value={newSkill}
                     onChange={(e) => setNewSkill(e.target.value)}
                     placeholder="Add a new skill"
@@ -411,8 +475,13 @@ export default function ProfilePage() {
                   <Button onClick={addSkill}>Add</Button>
                 </div>
                 <div className="flex justify-end space-x-2">
-                  <Button variant="outline" onClick={() => toggleEdit('skills')}>Cancel</Button>
-                  <Button onClick={() => handleSave('skills')}>Save</Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => toggleEdit("skills")}
+                  >
+                    Cancel
+                  </Button>
+                  <Button onClick={() => handleSave("skills")}>Save</Button>
                 </div>
               </div>
             )}
@@ -420,6 +489,5 @@ export default function ProfilePage() {
         </Card>
       </main>
     </div>
-  )
+  );
 }
-
