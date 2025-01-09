@@ -9,6 +9,8 @@ import Projects from "./pages/Projects";
 import SignupPage from "./pages/Signup";
 import LoginPage from "./pages/Login";
 import ProfilePage from "./pages/profile";
+import TokenPurchase from "./pages/Purchase";
+import WriteBlog from "./pages/WriteBlog";
 
 function App() {
   return (
@@ -23,6 +25,8 @@ function App() {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/purchase" element={<TokenPurchase />} />
+        <Route path="/write" element={<WriteBlog />} />
       </Routes>
     </BrowserRouter>
     </>

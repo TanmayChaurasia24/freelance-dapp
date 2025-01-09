@@ -43,8 +43,11 @@ export function Header() {
           <a href="/projects" className="hover:text-primary">
             Projects
           </a>
-          <a href="/postjobs" className="hover:text-primary">
-            Post a Job/Project
+          <a href="/purchase" className="hover:text-primary">
+            Purchase Token
+          </a>
+          <a href="/write" className="hover:text-primary">
+            Write Blog
           </a>
         </nav>
         <div className="flex items-center space-x-4">
