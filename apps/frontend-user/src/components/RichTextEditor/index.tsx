@@ -10,40 +10,41 @@ import BulletList from "@tiptap/extension-bullet-list";
 import OrderedList from "@tiptap/extension-ordered-list";
 import ImageResize from "tiptap-extension-resize-image";
 
-// @ts-ignore
-export default function RichTextEditor({ content, onChange}) {
+export default function RichTextEditor({ content, onChange }: any) {
   const editor = useEditor({
     extensions: [
-      StarterKit.configure(),
-      TextAlign.configure({
-        types: ["heading", "paragraph"],
+      StarterKit.configure({
+        heading: false, // Prevent conflict with StarterKit's default heading configuration
       }),
       Heading.configure({
-        levels: [1, 2, 3],
+        levels: [1, 2, 3], // Define heading levels
       }),
-      OrderedList.configure({
-        HTMLAttributes: {
-          class: "list-decimal ml-3",
-        },
+      TextAlign.configure({
+        types: ["heading", "paragraph"], // Support text alignment for these types
       }),
       BulletList.configure({
         HTMLAttributes: {
           class: "list-disc ml-3",
         },
       }),
-      Highlight,
-      Image,
-      ImageResize,
+      OrderedList.configure({
+        HTMLAttributes: {
+          class: "list-decimal ml-3",
+        },
+      }),
+      Highlight, // Enable highlighting
+      Image, // Enable image support
+      ImageResize, // Enable image resizing
     ],
-    content: content,
+    content: content, // Initial content for the editor
     editorProps: {
       attributes: {
         class: "min-h-[156px] border rounded-md bg-slate-50 py-2 px-3",
       },
     },
     onUpdate: ({ editor }) => {
-      console.log(editor.getHTML());
-      onChange(editor.getHTML());
+      console.log(editor.getHTML()); // Debugging: log editor content
+      onChange(editor.getHTML()); // Pass updated content to the parent component
     },
   });
 
