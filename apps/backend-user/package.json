@@ -10,6 +10,7 @@
   "author": "tanmay kumar chaurasia",
   "license": "ISC",
   "dependencies": {
+    "@google/generative-ai": "^0.21.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.17",
     "@types/jsonwebtoken": "^9.0.7",
@@ -17,9 +18,11 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "google": "^2.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.2",
-    "nodemon": "^3.1.9"
+    "nodemon": "^3.1.9",
+    "openai": "^4.78.1"
   },
   "devDependencies": {
     "@types/express": "^5.0.0",

@@ -44,6 +44,7 @@ const imageformschema = z.object({
 export default function Home() {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [blogcontent, setblogcontent] = useState<any>("");
 
   const form = useForm({
     mode: "onTouched",
@@ -62,7 +63,9 @@ export default function Home() {
   });
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
-    console.log(data);
+    // console.log(data);
+    console.log("blog content: ", blogcontent);
+    
   };
 
   const GenerateImage = () => {
@@ -147,7 +150,7 @@ export default function Home() {
                     <FormControl>
                       <RichTextEditor
                         content={field.value}
-                        onChange={(value: any) => field.onChange(value)}
+                        onChange={(value: any) => {field.onChange(value); setblogcontent(value)}}
                       />
                     </FormControl>
                     <FormMessage />
