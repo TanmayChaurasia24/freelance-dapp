@@ -9,11 +9,9 @@
     }
   ],
   "compilerOptions": {
-    "baseUrl": ".",
+    "baseUrl": ".", // Root directory
     "paths": {
-      "@components/*": ["components/*"],
-      "@utils/*": ["utils/*"],
-      "@/*": ["./src/*"]
+      "@/*": ["src/*"] // Pointing to `src`
     },
     "resolveJsonModule": true,
     "esModuleInterop": true,

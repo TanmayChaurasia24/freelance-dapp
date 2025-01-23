@@ -1,31 +1,40 @@
 import { useState, type FormEvent } from "react"
 import { useNavigate } from "react-router-dom"
+import axios from "axios" // Added missing import
 
 export default function AdminLogin() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  const [data, setData] = useState({
+    // Changed 'setdata' to 'setData' for consistency
+    username: "",
+    password: "",
+  })
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const router = useNavigate()
+  const navigate = useNavigate() // Changed 'router' to 'navigate' to match React Router's naming
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    console.log("inside handle submit func")
+    console.log(data.username, data.password) // Fixed to use data object
+
     e.preventDefault()
     setError("")
     setIsLoading(true)
 
-    // Here you would typically make an API call to your authentication endpoint
-    // For this example, we'll just simulate a login process
     try {
-      // Simulated API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      console.log("sending")
 
-      // Check credentials (replace with actual authentication logic)
-      if (email === "admin@freemotely.com" && password === "password123") {
-        // Successful login
-        router("/admin/dashboard") // Redirect to admin dashboard
-      } else {
-        setError("Invalid email or password")
+      const response = await axios.post("http://localhost:8000/api/admin/login", data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      console.log("arrived")
+
+      if (!response) {
+        console.log("no response from backend: ", response)
+        throw new Error("No response from backend")
       }
+      navigate("/dashboard") 
     } catch (err) {
       setError("An error occurred. Please try again.")
     } finally {
@@ -45,18 +54,18 @@ export default function AdminLogin() {
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email address
+              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+                Username
               </label>
               <div className="mt-1">
                 <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
+                  id="username"
+                  name="username"
+                  type="text"
+                  autoComplete="username"
                   required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={data.username}
+                  onChange={(e) => setData({ ...data, username: e.target.value })} // Fixed onChange handler
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 />
               </div>
@@ -73,8 +82,8 @@ export default function AdminLogin() {
                   type="password"
                   autoComplete="current-password"
                   required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={data.password} 
+                  onChange={(e) => setData({ ...data, password: e.target.value })} 
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 />
               </div>
