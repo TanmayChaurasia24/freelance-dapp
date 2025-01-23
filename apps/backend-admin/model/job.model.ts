@@ -6,12 +6,17 @@ const jobschema = new mongoose.Schema({
         trim: true,
         require: true
     },
+    description: {
+        type: String,
+        trim: true,
+        require: true
+    },
     company: {
         type: String,
         trim: true,
         require: true
     },
-    expectedsalary: {
+    salary: {
         type: String,
         trim: true,
         require: true

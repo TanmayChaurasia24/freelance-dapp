@@ -1,58 +1,97 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState } from "react"
-import { Button } from "../components/ui/button"
-import { Input } from "../components/ui/input"
-import { Textarea } from "../components/ui/textarea"
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
-import { Home, FileText, Briefcase } from "lucide-react"
+import type React from "react";
+import { useState } from "react";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Textarea } from "../components/ui/textarea";
+import axios from "axios"
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
+import { Home, FileText, Briefcase} from "lucide-react";
 
 type Blog = {
-  id: number
-  title: string
-  content: string
-}
+  id: number;
+  title: string;
+  content: string;
+};
 
-type Job = {
-  id: number
-  title: string
-  description: string
-}
+
 
 export default function Dashboard() {
-  const [activeTab, setActiveTab] = useState("blogs")
-  const [blogs, setBlogs] = useState<Blog[]>([])
-  const [jobs, setJobs] = useState<Job[]>([])
-  const [blogTitle, setBlogTitle] = useState("")
-  const [blogContent, setBlogContent] = useState("")
-  const [jobTitle, setJobTitle] = useState("")
-  const [jobDescription, setJobDescription] = useState("")
+  const [activeTab, setActiveTab] = useState("blogs");
+  const [blogs, setBlogs] = useState<Blog[]>([]);
+  const [blogTitle, setBlogTitle] = useState("");
+  const [blogContent, setBlogContent] = useState("");
+  const [jobTitle, setJobTitle] = useState("");
+  const [jobDescription, setJobDescription] = useState("");
+  const [company, setCompany] = useState("");
+  const [salary, setSalary] = useState("");
+  const [type, setType] = useState("");
+  const [location, setLocation] = useState("");
+  const [applicationurl, setApplicationUrl] = useState("");
 
   const handleAddBlog = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     const newBlog: Blog = {
       id: Date.now(),
       title: blogTitle,
       content: blogContent,
-    }
-    setBlogs([...blogs, newBlog])
-    setBlogTitle("")
-    setBlogContent("")
-  }
+    };
+    setBlogs([...blogs, newBlog]);
+    setBlogTitle("");
+    setBlogContent("");
+  };
 
-  const handleAddJob = (e: React.FormEvent) => {
-    e.preventDefault()
-    const newJob: Job = {
-      id: Date.now(),
-      title: jobTitle,
-      description: jobDescription,
+  const handleAddJob = async(e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("inside func add job");
+    
+    try {
+      const response = await axios.post("http://localhost:8000/api/jobs/create", {
+        title: jobTitle,
+        description: jobDescription,
+        company: company,
+        salary: salary,
+        type: type,
+        location: location,
+        applicationurl: applicationurl,
+        postedby: "tanmay2026"
+      }, {
+        headers: {
+          "Content-Type": "application/json",
+        } 
+      }) 
+
+      if(!response) {
+        console.log("no response while posting job", response);
+        return;
+      }
+
+      setJobTitle("");
+      setJobDescription("");
+      setCompany("");
+      setSalary("");
+      setType("");
+      setLocation("");
+      setApplicationUrl("");
+
+    } catch (error: any) {
+      console.log("error while posting new job: ", error);
+      
     }
-    setJobs([...jobs, newJob])
-    setJobTitle("")
-    setJobDescription("")
-  }
+
+  };
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -90,7 +129,9 @@ export default function Dashboard() {
             <TabsTrigger value="jobs">Jobs</TabsTrigger>
           </TabsList>
           <TabsContent value="dashboard">
-            <h2 className="text-2xl font-bold mb-4">Welcome to your Dashboard</h2>
+            <h2 className="text-2xl font-bold mb-4">
+              Welcome to your Dashboard
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Card>
                 <CardHeader>
@@ -105,7 +146,7 @@ export default function Dashboard() {
                   <CardTitle>Total Jobs</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-4xl font-bold">{jobs.length}</p>
+                  <p className="text-4xl font-bold">{10}</p>
                 </CardContent>
               </Card>
             </div>
@@ -170,27 +211,44 @@ export default function Dashboard() {
                     required
                     rows={5}
                   />
+                  <Input
+                    placeholder="Company"
+                    value={company}
+                    onChange={(e) => setCompany(e.target.value)}
+                    required
+                  />
+                  <Input
+                    placeholder="expected salary"
+                    value={salary}
+                    onChange={(e) => setSalary(e.target.value)}
+                    required
+                  />
+                  <Input
+                    placeholder="type"
+                    value={type}
+                    onChange={(e) => setType(e.target.value)}
+                    required
+                  />
+                  <Input
+                    placeholder="location"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    required
+                  />
+
+                  <Input
+                    placeholder="application URL"
+                    value={applicationurl}
+                    onChange={(e) => setApplicationUrl(e.target.value)}
+                    required
+                  />
                   <Button type="submit">Add Job Opening</Button>
                 </form>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Current Job Openings</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {jobs.map((job) => (
-                  <div key={job.id} className="mb-4 p-4 border rounded">
-                    <h3 className="text-lg font-semibold">{job.title}</h3>
-                    <p className="text-gray-600">{job.description}</p>
-                  </div>
-                ))}
               </CardContent>
             </Card>
           </TabsContent>
         </Tabs>
       </main>
     </div>
-  )
+  );
 }
-

@@ -2,10 +2,12 @@ import {Request, Response} from "express"
 import job from "../model/job.model"
 
 export const jobpost = async (req: Request, res: Response): Promise<any> => {
-    const {title,company,expectedsalary,type,location,applicationurl} = req.body;
+    const {title,description,company,salary,type,location,applicationurl} = req.body;
+    console.log(title,description,company,salary,type,location,applicationurl);
+    
 
     try {
-        if(!title || !company || !expectedsalary || !type || !location || !applicationurl) {
+        if(!title || !description || !company || !salary || !type || !location || !applicationurl) {
             return res.status(400).json({
                 message: "incomplete information"
             })
@@ -22,8 +24,9 @@ export const jobpost = async (req: Request, res: Response): Promise<any> => {
         
         const newjob = await job.create({
             title,
+            description,
             company,
-            expectedsalary,
+            salary,
             type,
             location,
             applicationurl
