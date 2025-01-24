@@ -1,5 +1,5 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { Request, Response } from "express";
+import { Request, response, Response } from "express";
 import userModel from "../model/user.model";
 import bcrypt from "bcryptjs";
 
@@ -138,3 +138,23 @@ export const extractUserInformationn = async (
     });
   }
 };
+
+export const allUsers = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const response = await userModel.find();
+
+    if(!response) {
+      return res.status(404).json({ message: "No users found" });
+    }
+
+    return res.status(201).json({
+      message: "users found successfully",
+      users: response,
+    })
+  } catch (error: any) {
+    return res.status(500).json({
+      message: "error while fetching all users",
+      errormessage: error.message
+    })
+  }
+}

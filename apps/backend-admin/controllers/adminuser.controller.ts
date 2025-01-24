@@ -1,6 +1,7 @@
 import {Request, Response} from "express"
 import admin from "../model/admin.model"
 import bcrypt from "bcryptjs"
+import axios from "axios"
 
 export const createAdmin = async(req: Request, res: Response): Promise<any> => {
     const {username,password} = req.body;
@@ -58,3 +59,14 @@ export const login = async(req: Request, res: Response): Promise<any> => {
     }
 }
 
+export const allUsers = async(req: Request, res: Response): Promise<any> => {
+    try {
+        const response = await axios.get("http://localhost:3000/api/auth/all");
+        return res.status(200).json(response.data);
+    } catch (error: any) {
+        return res.status(500).json({
+            message: "error occured",
+            result: error.message
+        })
+    }
+}

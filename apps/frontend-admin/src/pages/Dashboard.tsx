@@ -1,97 +1,114 @@
-"use client";
+"use client"
 
-import type React from "react";
-import { useState } from "react";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { Textarea } from "../components/ui/textarea";
+import type React from "react"
+import { useEffect, useState } from "react"
+import { Button } from "../components/ui/button"
+import { Input } from "../components/ui/input"
+import { Textarea } from "../components/ui/textarea"
 import axios from "axios"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../components/ui/card";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "../components/ui/tabs";
-import { Home, FileText, Briefcase} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
+import { Home, FileText, Briefcase, Users } from "lucide-react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../components/ui/dialog"
 
 type Blog = {
-  id: number;
-  title: string;
-  content: string;
-};
+  id: number
+  title: string
+  content: string
+}
 
-
+type User = {
+  id: string
+  username: string
+  name: string
+  email: string
+  phone?: string
+  address?: string
+  bio: string,
+  skills: [],
+  blogs: [],
+  appliedjobs: [],
+  profilepic: []
+}
 
 export default function Dashboard() {
-  const [activeTab, setActiveTab] = useState("blogs");
-  const [blogs, setBlogs] = useState<Blog[]>([]);
-  const [blogTitle, setBlogTitle] = useState("");
-  const [blogContent, setBlogContent] = useState("");
-  const [jobTitle, setJobTitle] = useState("");
-  const [jobDescription, setJobDescription] = useState("");
-  const [company, setCompany] = useState("");
-  const [salary, setSalary] = useState("");
-  const [type, setType] = useState("");
-  const [location, setLocation] = useState("");
-  const [applicationurl, setApplicationUrl] = useState("");
+  const [activeTab, setActiveTab] = useState("dashboard")
+  const [blogs, setBlogs] = useState<Blog[]>([])
+  const [blogTitle, setBlogTitle] = useState("")
+  const [blogContent, setBlogContent] = useState("")
+  const [jobTitle, setJobTitle] = useState("")
+  const [jobDescription, setJobDescription] = useState("")
+  const [company, setCompany] = useState("")
+  const [salary, setSalary] = useState("")
+  const [type, setType] = useState("")
+  const [location, setLocation] = useState("")
+  const [applicationurl, setApplicationUrl] = useState("")
+  const [bulkUsers, setUsers] = useState<User[]>([])
+  const [selectedUser, setSelectedUser] = useState<User | null>(null)
 
   const handleAddBlog = (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
     const newBlog: Blog = {
       id: Date.now(),
       title: blogTitle,
       content: blogContent,
-    };
-    setBlogs([...blogs, newBlog]);
-    setBlogTitle("");
-    setBlogContent("");
-  };
+    }
+    setBlogs([...blogs, newBlog])
+    setBlogTitle("")
+    setBlogContent("")
+  }
 
-  const handleAddJob = async(e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("inside func add job");
-    
+  const handleAddJob = async (e: React.FormEvent) => {
+    e.preventDefault()
     try {
-      const response = await axios.post("http://localhost:8000/api/jobs/create", {
-        title: jobTitle,
-        description: jobDescription,
-        company: company,
-        salary: salary,
-        type: type,
-        location: location,
-        applicationurl: applicationurl,
-        postedby: "tanmay2026"
-      }, {
-        headers: {
-          "Content-Type": "application/json",
-        } 
-      }) 
+      const response = await axios.post(
+        "http://localhost:8000/api/jobs/create",
+        {
+          title: jobTitle,
+          description: jobDescription,
+          company: company,
+          salary: salary,
+          type: type,
+          location: location,
+          applicationurl: applicationurl,
+          postedby: "tanmay2026",
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      )
 
-      if(!response) {
-        console.log("no response while posting job", response);
-        return;
+      if (response.data) {
+        // Reset form fields after successful job posting
+        setJobTitle("")
+        setJobDescription("")
+        setCompany("")
+        setSalary("")
+        setType("")
+        setLocation("")
+        setApplicationUrl("")
       }
-
-      setJobTitle("");
-      setJobDescription("");
-      setCompany("");
-      setSalary("");
-      setType("");
-      setLocation("");
-      setApplicationUrl("");
-
     } catch (error: any) {
-      console.log("error while posting new job: ", error);
-      
+      console.error("Error while posting new job: ", error)
+    }
+  }
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response: any = await axios.get("http://localhost:8000/api/admin/showall")
+        if (response.data && response.data.users) {
+          setUsers(response.data.users)
+        }
+      } catch (error) {
+        console.error("Error fetching users:", error)
+      }
     }
 
-  };
+    fetchUsers()
+  }, [])
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -104,13 +121,15 @@ export default function Dashboard() {
           {[
             { name: "Dashboard", icon: Home },
             { name: "Blogs", icon: FileText },
-            { name: "Jobs", icon: Briefcase },
+            { name: "Create Job", icon: Briefcase },
+            { name: "Users", icon: Users },
+            { name: "All Jobs", icon: Briefcase },
           ].map((item) => (
             <button
               key={item.name}
-              onClick={() => setActiveTab(item.name.toLowerCase())}
+              onClick={() => setActiveTab(item.name.toLowerCase().replace(/\s+/g, ""))}
               className={`flex items-center w-full px-6 py-3 text-gray-700 hover:bg-gray-100 ${
-                activeTab === item.name.toLowerCase() ? "bg-gray-100" : ""
+                activeTab === item.name.toLowerCase().replace(/\s+/g, "") ? "bg-gray-100" : ""
               }`}
             >
               <item.icon className="mr-3 h-5 w-5" />
@@ -123,15 +142,8 @@ export default function Dashboard() {
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto p-8">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList>
-            <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-            <TabsTrigger value="blogs">Blogs</TabsTrigger>
-            <TabsTrigger value="jobs">Jobs</TabsTrigger>
-          </TabsList>
           <TabsContent value="dashboard">
-            <h2 className="text-2xl font-bold mb-4">
-              Welcome to your Dashboard
-            </h2>
+            <h2 className="text-2xl font-bold mb-4">Welcome to your Dashboard</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Card>
                 <CardHeader>
@@ -190,7 +202,7 @@ export default function Dashboard() {
               </CardContent>
             </Card>
           </TabsContent>
-          <TabsContent value="jobs">
+          <TabsContent value="createjob">
             <h2 className="text-2xl font-bold mb-4">Manage Job Openings</h2>
             <Card className="mb-6">
               <CardHeader>
@@ -211,33 +223,22 @@ export default function Dashboard() {
                     required
                     rows={5}
                   />
+                  <Input placeholder="Company" value={company} onChange={(e) => setCompany(e.target.value)} required />
                   <Input
-                    placeholder="Company"
-                    value={company}
-                    onChange={(e) => setCompany(e.target.value)}
-                    required
-                  />
-                  <Input
-                    placeholder="expected salary"
+                    placeholder="Expected Salary"
                     value={salary}
                     onChange={(e) => setSalary(e.target.value)}
                     required
                   />
+                  <Input placeholder="Job Type" value={type} onChange={(e) => setType(e.target.value)} required />
                   <Input
-                    placeholder="type"
-                    value={type}
-                    onChange={(e) => setType(e.target.value)}
-                    required
-                  />
-                  <Input
-                    placeholder="location"
+                    placeholder="Location"
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
                     required
                   />
-
                   <Input
-                    placeholder="application URL"
+                    placeholder="Application URL"
                     value={applicationurl}
                     onChange={(e) => setApplicationUrl(e.target.value)}
                     required
@@ -247,8 +248,80 @@ export default function Dashboard() {
               </CardContent>
             </Card>
           </TabsContent>
+          <TabsContent value="users" className="">
+            <h2 className="text-2xl font-bold mb-4">All Users</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {bulkUsers.length > 0 ? (
+                bulkUsers.map((user: User) => (
+                  <Card key={user.id} className="mb-6">
+                    <CardHeader>
+                      <CardTitle className="text-xl">{user.name}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-gray-600 mb-4">
+                        <span className="font-semibold">Username:</span> {user.username}
+                      </p>
+                      <p className="text-sm text-gray-600 mb-4">
+                        <span className="font-semibold">Email:</span> {user.email}
+                      </p>
+                      <div className="flex justify-between items-center">
+                        <Button
+                          variant="destructive"
+                          onClick={() => {
+                            /* Handle delete user */
+                          }}
+                        >
+                          Delete User
+                        </Button>
+                        <Button variant="outline" onClick={() => setSelectedUser(user)}>
+                          Show more
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              ) : (
+                <p>No users available.</p>
+              )}
+            </div>
+          </TabsContent>
         </Tabs>
       </main>
+
+      <Dialog open={!!selectedUser} onOpenChange={() => setSelectedUser(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>User Details</DialogTitle>
+            <DialogDescription>Detailed information about the selected user.</DialogDescription>
+          </DialogHeader>
+          {selectedUser && (
+            <div className="mt-4">
+              <p>
+                <strong>Username:</strong> {selectedUser.username}
+              </p>
+              <p>
+                <strong>Name:</strong> {selectedUser.name}
+              </p>
+              <p>
+                <strong>Email:</strong> {selectedUser.email}
+              </p>
+              <p>
+                <strong>Bio:</strong> {selectedUser.bio || "Not Provided"}
+              </p>
+              <p>
+                <strong>Address:</strong> {selectedUser.address || "Not Provided"}
+              </p>
+              <p>
+                <strong>Blogs:</strong> {selectedUser.blogs || "Not Provided"}
+              </p>
+              <p>
+                <strong>appliedjobs:</strong> {selectedUser.appliedjobs || "Not Provided"}
+              </p>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
-  );
+  )
 }
+
