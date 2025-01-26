@@ -64,7 +64,7 @@ export const login = async (req: Request, res: Response): Promise<any> => {
       return res.status(400).json({
         message: "username and password are required",
       });
-    }
+    }    
 
     const isthere = await userModel.findOne({ username });
     if (!isthere) {
