@@ -2,6 +2,7 @@ import express from "express";
 import connectdb from "./db";
 import user from "./routes/user.route";
 import images from "./routes/image.route"
+import jobs from "./routes/job.route"
 import cors from "cors";
 
 const port = 3000;
@@ -16,6 +17,8 @@ connectdb();
 
 app.use("/api/auth", user);
 app.use("/api/image", images)
+app.use("/api/jobs", jobs)
+
 
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);

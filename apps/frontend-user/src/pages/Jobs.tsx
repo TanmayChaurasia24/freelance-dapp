@@ -1,120 +1,57 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Header } from "@/components/Header"
 // import { Footer } from "@/components/Footer"
 import { JobCard } from "@/components/JobCard"
 import { FilterSidebar } from "@/components/FilterSidebar"
+import axios from 'axios'
 
-const jobs = [
-  {
-    id: '1',
-    title: 'Senior React Developer',
-    company: 'TechCorp',
-    location: 'Remote - US',
-    type: 'Full-time',
-    salary: '$120,000 - $150,000',
-    skills: ['React', 'TypeScript', 'Node.js'],
-  },
-  {
-    id: '2',
-    title: 'UX Designer',
-    company: 'DesignHub',
-    location: 'Remote - Worldwide',
-    type: 'Contract',
-    salary: '$80,000 - $100,000',
-    skills: ['Figma', 'User Research', 'Prototyping'],
-  },
-  {
-    id: '3',
-    title: 'DevOps Engineer',
-    company: 'CloudSys',
-    location: 'Remote - Europe',
-    type: 'Full-time',
-    salary: '$100,000 - $130,000',
-    skills: ['AWS', 'Docker', 'Kubernetes'],
-  },
-  {
-    id: '4',
-    title: 'Frontend Developer',
-    company: 'WebTech',
-    location: 'Remote - US',
-    type: 'Part-time',
-    salary: '$60,000 - $80,000',
-    skills: ['JavaScript', 'React', 'CSS'],
-  },
-  {
-    id: '5',
-    title: 'Data Scientist',
-    company: 'DataCorp',
-    location: 'Remote - Worldwide',
-    type: 'Full-time',
-    salary: '$130,000 - $160,000',
-    skills: ['Python', 'Machine Learning', 'SQL'],
-  },
-  {
-    id: '4',
-    title: 'Frontend Developer',
-    company: 'WebTech',
-    location: 'Remote - US',
-    type: 'Part-time',
-    salary: '$60,000 - $80,000',
-    skills: ['JavaScript', 'React', 'CSS'],
-  },
-  {
-    id: '5',
-    title: 'Data Scientist',
-    company: 'DataCorp',
-    location: 'Remote - Worldwide',
-    type: 'Full-time',
-    salary: '$130,000 - $160,000',
-    skills: ['Python', 'Machine Learning', 'SQL'],
-  },
-  {
-    id: '4',
-    title: 'Frontend Developer',
-    company: 'WebTech',
-    location: 'Remote - US',
-    type: 'Part-time',
-    salary: '$60,000 - $80,000',
-    skills: ['JavaScript', 'React', 'CSS'],
-  },
-  {
-    id: '5',
-    title: 'Data Scientist',
-    company: 'DataCorp',
-    location: 'Remote - Worldwide',
-    type: 'Full-time',
-    salary: '$130,000 - $160,000',
-    skills: ['Python', 'Machine Learning', 'SQL'],
-  },
-  {
-    id: '4',
-    title: 'Frontend Developer',
-    company: 'WebTech',
-    location: 'Remote - US',
-    type: 'Part-time',
-    salary: '$60,000 - $80,000',
-    skills: ['JavaScript', 'React', 'CSS'],
-  },
-  {
-    id: '5',
-    title: 'Data Scientist',
-    company: 'DataCorp',
-    location: 'Remote - Worldwide',
-    type: 'Full-time',
-    salary: '$130,000 - $160,000',
-    skills: ['Python', 'Machine Learning', 'SQL'],
-  },
-]
+interface jobtype {
+  _id: string,
+  title: string,
+  description: string,
+  company: string,
+  salary: string,
+  type: string,
+  location: string,
+  applicationurl: string
+
+}
 
 export default function JobsPage() {
+  const [jobs,setjobs] = useState<jobtype[]>([]);
   const [filteredJobs, setFilteredJobs] = useState(jobs)
+  
+  const locations = useMemo(() => [...new Set(jobs.map((job) => job.location))], [jobs]);
+  const companies = useMemo(() => [...new Set(jobs.map((job) => job.company))], [jobs]);
+  const jobTypes = useMemo(() => [...new Set(jobs.map((job) => job.type))], [jobs]);
 
-  const locations = Array.from(new Set(jobs.map((job) => job.location)))
-  const companies = Array.from(new Set(jobs.map((job) => job.company)))
-  const jobTypes = Array.from(new Set(jobs.map((job) => job.type)))
+
+  useEffect(() => {
+    setFilteredJobs(jobs);
+  }, [jobs]);
+  useEffect(() => {
+    const fetchalljobs = async() => {
+      try {
+        const response: any = await axios.get("http://localhost:3000/api/jobs/bulk");
+
+        if(!response) {
+          console.log("error: " + response);
+        }
+
+        console.log("response jobs: ", response.data.data.response);
+        setjobs(response.data.data.response);
+        
+      } catch (error: any) {
+        console.log("error is showing all the jobs: " + error.message);
+        
+      }
+    }
+
+    fetchalljobs()
+  },[])
 
   const handleFilterChange = (filters: { search: string; locations: string | string[]; companies: string | string[]; jobTypes: string | string[] }) => {
-    const filtered = jobs.filter((job) => {
+    const filtered = jobs.filter((job: jobtype) => {
       const matchesSearch =
         job.title.toLowerCase().includes(filters.search.toLowerCase()) ||
         job.company.toLowerCase().includes(filters.search.toLowerCase())
@@ -147,8 +84,8 @@ export default function JobsPage() {
           </div>
           <div className="md:w-3/4 ">
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {filteredJobs.map((job) => (
-                <JobCard key={job.id} job={job} />
+              {filteredJobs.map((job: jobtype) => (
+                <JobCard key={job._id} job={job} />
               ))}
             </div>
             {filteredJobs.length === 0 && (
