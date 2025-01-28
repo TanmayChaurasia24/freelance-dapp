@@ -9,7 +9,7 @@ const jobschema = new mongoose.Schema({
     description: {
         type: String,
         trim: true,
-        require: true
+        default: "no description provided"
     },
     company: {
         type: String,
@@ -36,6 +36,11 @@ const jobschema = new mongoose.Schema({
         trim: true,
         require: true,
         unique: true
+    },
+    skills: {
+        type: String,
+        trim: true,
+        require: true
     },
     postedby: {
         type: mongoose.Schema.Types.ObjectId,

@@ -14,6 +14,7 @@ interface jobtype {
   type: string,
   location: string,
   applicationurl: string
+  skills: string
 
 }
 
