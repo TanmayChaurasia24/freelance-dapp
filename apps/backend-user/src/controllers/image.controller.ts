@@ -1,32 +1,49 @@
 import { Request, Response } from "express";
 
-import { GoogleGenerativeAI } from "@google/generative-ai";
-const genAI = new GoogleGenerativeAI("GEMINI_API_KEY");
-
-export async function completeWithAI(req: Request, res: Response): Promise<any> {
-  const { prompt }: any = req.body;
+export const generateContent = async (req: Request, res: Response) => {
+  const model = "@cf/meta/llama-3-8b-instruct";
+  const { prompt }: { prompt: string } = req.body; // Use proper type for `prompt`
   
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const response = await fetch(
+      `https://api.cloudflare.com/client/v4/accounts/a08822ecd78ffb3acede87da0e234c0e/ai/run/${model}`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.API_TOKEN}`, // Use environment variable
+          "Content-Type": "application/json", // Missing Content-Type header
+        },
+        body: JSON.stringify({
+          messages: [
+            {
+              role: "system",
+              content: "You are a friendly assistant that helps write stories",
+            },
+            {
+              role: "user",
+              content: prompt,
+            },
+          ],
+        }),
+      }
+    );
 
-    if(!prompt) {
-      res.status(300).json({
-        message: "prompt not received properly"
-      })
+    // Ensure response is valid
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.statusText}`);
     }
-  
-    console.log("your prompt is: ", prompt);
-  
-    const result = await model.generateContent(prompt);
-    console.log(result.response.text());
 
-    res.status(201).json({
-      success: true,
-      message: "AI generated text successfully",
-      data: result.response.text
-    })
-  } catch(error: any){
+    const data = await response.json(); // Extract response body
 
+    return res.status(200).json({ success: true, data });
+
+  } catch (error: any) {
+    console.error("Error generating content:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Error while generating content",
+      error: error.message || "Unknown error",
+    });
   }
-
-}
+};
