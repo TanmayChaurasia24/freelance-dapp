@@ -118,13 +118,10 @@ export default function HomePage() {
       <Header />
       <main className="container mx-auto px-4 py-8">
         <HeroSection />
-        <FeaturedOpportunities />
-        <SkillsFilter allSkills={allSkills} onSkillsChange={setSelectedSkills} />
-        <JobsAndProjects jobs={jobs} projects={projects} selectedSkills={selectedSkills} />
-        <HowItWorks />
+        <BlogPosts blogPosts={blogPosts} />
         <Testimonials testimonials={testimonials} />
         <Newsletter />
-        <BlogPosts blogPosts={blogPosts} />
+        <HowItWorks />
         <WhyChooseUs />
       </main>
       <Footer />

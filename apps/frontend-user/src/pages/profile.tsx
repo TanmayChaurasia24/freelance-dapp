@@ -1,493 +1,156 @@
-"use client";
+import React from 'react';
+import { 
+  MapPin, 
+  Briefcase, 
+  School, 
+  Mail, 
+  Globe, 
+  LinkedinIcon,
+  Twitter,
+  Github,
+  Edit,
+  MessageSquare,
+  UserPlus,
+  MoreHorizontal
+} from 'lucide-react';
+import { Header } from '@/components/Header';
 
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Pencil, MapPin } from "lucide-react";
-import { Header } from "@/components/Header";
-import toast from "react-hot-toast";
-import Cookies from "js-cookie";
-
-interface UserProfile {
-  name: string;
-  title: string;
-  email: string;
-  bio: string;
-  skills: string[];
-  location: {
-    country: string;
-    state: string;
-    city: string;
-  };
-  education: {
-    degree: string;
-    school: string;
-    duration: string;
-  }[];
-  experience: {
-    position: string;
-    company: string;
-    duration: string;
-    description: string;
-  }[];
-  socialLinks: {
-    linkedin: string;
-    github: string;
-    portfolio: string;
-  };
-}
-
-export default function ProfilePage() {
-  const [isEditing, setIsEditing] = useState<Record<string, boolean>>({
-    summary: false,
-    about: false,
-    experience: false,
-    education: false,
-    skills: false,
-    socialLinks: false,
-  });
-
-  const [profile, setProfile] = useState({
-    name: "",
-    title: "",
-    email: "",
-    bio: "",
-    skills: [] as string[],
-    location: {
-      country: "",
-      state: "",
-      city: "",
-    },
-    education: [] as { degree: string; school: string; duration: string }[],
-    experience: [] as {
-      company: string;
-      position: string;
-      duration: string;
-      description: string;
-    }[],
-    socialLinks: {
-      linkedin: "",
-      github: "",
-      portfolio: "",
-    },
-  });
-
-  const [newSkill, setNewSkill] = useState("");
-
-  const toggleEdit = (section: string) => {
-    setIsEditing((prev) => ({ ...prev, [section]: !prev[section] }));
-  };
-
-  const handleSave = async (section: string) => {
-    try {
-      const userToken = Cookies.get("User");
-      if (!userToken) {
-        toast.error("User token not found. Please log in again.");
-        return;
-      }
-
-      const response = await axios.put(
-        "http://localhost:3000/api/user/update",
-        {
-          [section]: profile[section as keyof typeof profile],
-        },
-        {
-          headers: { Authorization: `Bearer ${userToken}` },
-        }
-      );
-
-      if (response.data) {
-        toast.success("Profile updated successfully!");
-        setIsEditing((prev) => ({ ...prev, [section]: false }));
-      } else {
-        toast.error("Failed to update profile. Please try again.");
-      }
-    } catch (error) {
-      console.error("Error updating profile:", error);
-      toast.error("An error occurred. Please try again later.");
-    }
-  };
-
-  const updateProfile = (section: string, value: any) => {
-    setProfile((prev) => ({ ...prev, [section]: value }));
-  };
-
-  const addSkill = () => {
-    if (newSkill && !profile.skills.includes(newSkill)) {
-      setProfile((prev) => ({ ...prev, skills: [...prev.skills, newSkill] }));
-      setNewSkill("");
-    }
-  };
-
-  const removeSkill = (skillToRemove: string) => {
-    setProfile((prev) => ({
-      ...prev,
-      skills: prev.skills.filter((skill) => skill !== skillToRemove),
-    }));
-  };
-
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const usertoken = Cookies.get("User");
-        if (!usertoken) {
-          console.log("User token is not present");
-          return;
-        }
-        console.log(usertoken);
-
-        const response = await axios.get<UserProfile>(
-          "http://localhost:3000/api/auth/info",
-          {
-            headers: { Authorization: `Bearer ${usertoken}` },
-          }
-        );
-
-        console.log("response from backend is: ", response);
-
-        if (response.data) {
-          //@ts-ignore
-          const userData = response.data.user;
-          console.log("user data is: ", userData);
-
-          setProfile({
-            name: userData.name || "",
-            title: userData.title || "",
-            email: userData.email || "",
-            bio: userData.bio || "",
-            skills: userData.skills || [],
-            location: userData.location || { country: "", state: "", city: "" },
-            education: userData.education || [],
-            experience: userData.experience || [],
-            socialLinks: userData.socialLinks || {
-              linkedin: "",
-              github: "",
-              portfolio: "",
-            },
-          });
-          console.log("user profile is: ", profile);
-        } else {
-          toast.error("Failed to fetch user data. Please try again.");
-        }
-      } catch (error) {
-        console.error("Error fetching user info:", error);
-        toast.error("An error occurred. Please try again later.");
-      }
-    };
-
-    fetchUserInfo();
-  }, []);
-
+function App() {
   return (
-    <div className="min-h-screen bg-gray-100">
-      <Header />
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <Header/>
 
-      <main className="container mx-auto px-4 py-8 max-w-4xl">
-        <Card className="mb-6">
-          <CardContent className="pt-6">
-            <div className="flex justify-end mb-4">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => toggleEdit("summary")}
-              >
-                <Pencil size={16} />
-              </Button>
-            </div>
-            <div className="flex flex-col md:flex-row items-center md:items-start">
+      <main className="max-w-5xl mx-auto px-4 py-8">
+        <div className="bg-white rounded-lg shadow">
+          {/* Cover Photo */}
+          <div 
+            className="h-60 rounded-t-lg bg-cover bg-center"
+            style={{
+              backgroundImage: 'url("https://images.unsplash.com/photo-1579546929518-9e396f3cc809?auto=format&fit=crop&w=1200&q=80")'
+            }}
+          />
+
+          {/* Profile Section */}
+          <div className="px-8 pb-8">
+            {/* Profile Picture */}
+            <div className="relative -mt-20 mb-4">
               <img
-                src="/placeholder.svg?height=150&width=150"
+                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&h=150&q=80"
                 alt="Profile"
-                className="rounded-full w-32 h-32 mb-4 md:mb-0 md:mr-6"
+                className="w-40 h-40 rounded-full border-4 border-white shadow-lg"
               />
-              <div className="text-center md:text-left flex-grow">
-                {isEditing.summary ? (
-                  <div className="space-y-2">
-                    <Input
-                      value={profile.name}
-                      onChange={(e) => updateProfile("name", e.target.value)}
-                      placeholder="Name"
-                    />
-                    <Input
-                      value={profile.title}
-                      onChange={(e) => updateProfile("title", e.target.value)}
-                      placeholder="Title"
-                    />
-                    <Input
-                      value={profile.location.city}
-                      onChange={(e) =>
-                        updateProfile("location", {
-                          ...profile.location,
-                          city: e.target.value,
-                        })
-                      }
-                      placeholder="City"
-                    />
-                  </div>
-                ) : (
-                  <>
-                    <h1 className="text-2xl font-bold mb-2">{profile.name}</h1>
-                    <p className="text-gray-600 mb-2">{profile.title}</p>
-                    <p className="text-gray-500 mb-4 flex items-center justify-center md:justify-start">
-                      <MapPin size={16} className="mr-1" />{" "}
-                      {profile.location.city}
-                    </p>
-                  </>
-                )}
-                <div className="flex flex-wrap justify-center md:justify-start gap-2 mb-4">
-                  <Button variant="outline">Connect</Button>
-                  <Button variant="outline">Message</Button>
-                  <Button variant="outline">More</Button>
-                </div>
-              </div>
+              <button className="absolute bottom-2 right-2 p-2 bg-white rounded-full shadow-md hover:bg-gray-50">
+                <Edit size={20} className="text-gray-600" />
+              </button>
             </div>
-            {isEditing.summary && (
-              <div className="mt-4 flex justify-end space-x-2">
-                <Button variant="outline" onClick={() => toggleEdit("summary")}>
-                  Cancel
-                </Button>
-                <Button onClick={() => handleSave("summary")}>Save</Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
 
-        <Card className="mb-6">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>About</CardTitle>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => toggleEdit("about")}
-            >
-              <Pencil size={16} />
-            </Button>
-          </CardHeader>
-          <CardContent>
-            {isEditing.about ? (
+            {/* Profile Info */}
+            <div className="flex justify-between items-start mb-6">
               <div>
-                <Textarea
-                  value={profile.bio}
-                  onChange={(e) => updateProfile("bio", e.target.value)}
-                  rows={4}
-                />
-                <div className="mt-4 flex justify-end space-x-2">
-                  <Button variant="outline" onClick={() => toggleEdit("about")}>
-                    Cancel
-                  </Button>
-                  <Button onClick={() => handleSave("about")}>Save</Button>
+                <h2 className="text-3xl font-bold text-gray-900">John Doe</h2>
+                <p className="text-xl text-gray-600">Senior Software Engineer</p>
+                <div className="flex items-center gap-4 mt-2 text-gray-600">
+                  <span className="flex items-center gap-1">
+                    <MapPin size={18} />
+                    San Francisco, CA
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Mail size={18} />
+                    john.doe@example.com
+                  </span>
                 </div>
               </div>
-            ) : (
-              <p>{profile.bio}</p>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card className="mb-6">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Experience</CardTitle>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => toggleEdit("experience")}
-            >
-              <Pencil size={16} />
-            </Button>
-          </CardHeader>
-          <CardContent>
-            {profile.experience.map((exp, index) => (
-              <div key={index} className={index > 0 ? "mt-4" : ""}>
-                {isEditing.experience ? (
-                  <>
-                    <Input
-                      value={exp.position}
-                      onChange={(e) => {
-                        const newExperiences = [...profile.experience];
-                        newExperiences[index].position = e.target.value;
-                        updateProfile("experience", newExperiences);
-                      }}
-                      className="mb-2"
-                      placeholder="Job Title"
-                    />
-                    <Input
-                      value={exp.company}
-                      onChange={(e) => {
-                        const newExperiences = [...profile.experience];
-                        newExperiences[index].company = e.target.value;
-                        updateProfile("experience", newExperiences);
-                      }}
-                      className="mb-2"
-                      placeholder="Company"
-                    />
-                    <Input
-                      value={exp.duration}
-                      onChange={(e) => {
-                        const newExperiences = [...profile.experience];
-                        newExperiences[index].duration = e.target.value;
-                        updateProfile("experience", newExperiences);
-                      }}
-                      className="mb-2"
-                      placeholder="Duration"
-                    />
-                    <Textarea
-                      value={exp.description}
-                      onChange={(e) => {
-                        const newExperiences = [...profile.experience];
-                        newExperiences[index].description = e.target.value;
-                        updateProfile("experience", newExperiences);
-                      }}
-                      placeholder="Description"
-                    />
-                  </>
-                ) : (
-                  <>
-                    <h3 className="text-lg font-semibold">{exp.position}</h3>
-                    <p className="text-gray-600">{exp.company}</p>
-                    <p className="text-gray-500 text-sm">{exp.duration}</p>
-                    <p className="mt-2">{exp.description}</p>
-                  </>
-                )}
+              <div className="flex gap-2">
+                <button className="px-4 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 flex items-center gap-2">
+                  <MessageSquare size={18} />
+                  Message
+                </button>
+                <button className="px-4 py-2 border border-gray-300 rounded-full hover:bg-gray-50 flex items-center gap-2">
+                  <UserPlus size={18} />
+                  Connect
+                </button>
+                <button className="p-2 border border-gray-300 rounded-full hover:bg-gray-50">
+                  <MoreHorizontal size={20} />
+                </button>
               </div>
-            ))}
-            {isEditing.experience && (
-              <div className="mt-4 flex justify-end space-x-2">
-                <Button
-                  variant="outline"
-                  onClick={() => toggleEdit("experience")}
-                >
-                  Cancel
-                </Button>
-                <Button onClick={() => handleSave("experience")}>Save</Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card className="mb-6">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Education</CardTitle>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => toggleEdit("education")}
-            >
-              <Pencil size={16} />
-            </Button>
-          </CardHeader>
-          <CardContent>
-            {profile.education.map((edu, index) => (
-              <div key={index} className={index > 0 ? "mt-4" : ""}>
-                {isEditing.education ? (
-                  <>
-                    <Input
-                      value={edu.degree}
-                      onChange={(e) => {
-                        const newEducation = [...profile.education];
-                        newEducation[index].degree = e.target.value;
-                        updateProfile("education", newEducation);
-                      }}
-                      className="mb-2"
-                      placeholder="Degree"
-                    />
-                    <Input
-                      value={edu.school}
-                      onChange={(e) => {
-                        const newEducation = [...profile.education];
-                        newEducation[index].school = e.target.value;
-                        updateProfile("education", newEducation);
-                      }}
-                      className="mb-2"
-                      placeholder="School"
-                    />
-                    <Input
-                      value={edu.duration}
-                      onChange={(e) => {
-                        const newEducation = [...profile.education];
-                        newEducation[index].duration = e.target.value;
-                        updateProfile("education", newEducation);
-                      }}
-                      placeholder="Duration"
-                    />
-                  </>
-                ) : (
-                  <>
-                    <h3 className="text-lg font-semibold">{edu.degree}</h3>
-                    <p className="text-gray-600">{edu.school}</p>
-                    <p className="text-gray-500 text-sm">{edu.duration}</p>
-                  </>
-                )}
-              </div>
-            ))}
-            {isEditing.education && (
-              <div className="mt-4 flex justify-end space-x-2">
-                <Button
-                  variant="outline"
-                  onClick={() => toggleEdit("education")}
-                >
-                  Cancel
-                </Button>
-                <Button onClick={() => handleSave("education")}>Save</Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Skills</CardTitle>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => toggleEdit("skills")}
-            >
-              <Pencil size={16} />
-            </Button>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-2 mb-4">
-              {profile.skills.map((skill, index) => (
-                <Badge key={index} variant="secondary">
-                  {skill}
-                  {isEditing.skills && (
-                    <button
-                      className="ml-2 text-red-500"
-                      onClick={() => removeSkill(skill)}
-                    >
-                      ×
-                    </button>
-                  )}
-                </Badge>
-              ))}
             </div>
-            {isEditing.skills && (
-              <div className="mt-4">
-                <div className="flex gap-2 mb-4">
-                  <Input
-                    value={newSkill}
-                    onChange={(e) => setNewSkill(e.target.value)}
-                    placeholder="Add a new skill"
-                  />
-                  <Button onClick={addSkill}>Add</Button>
+
+            {/* About */}
+            <section className="mb-8">
+              <h3 className="text-xl font-bold text-gray-900 mb-4">About</h3>
+              <p className="text-gray-600">
+                Passionate software engineer with 8+ years of experience in full-stack development.
+                Specialized in React, TypeScript, and cloud technologies. Always eager to learn and
+                share knowledge with the community.
+              </p>
+            </section>
+
+            {/* Experience */}
+            <section className="mb-8">
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Experience</h3>
+              <div className="space-y-4">
+                <div className="flex gap-4">
+                  <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <Briefcase className="text-gray-600" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900">Senior Software Engineer</h4>
+                    <p className="text-gray-600">Tech Corp Inc.</p>
+                    <p className="text-sm text-gray-500">2020 - Present · 3 years</p>
+                  </div>
                 </div>
-                <div className="flex justify-end space-x-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => toggleEdit("skills")}
-                  >
-                    Cancel
-                  </Button>
-                  <Button onClick={() => handleSave("skills")}>Save</Button>
+                <div className="flex gap-4">
+                  <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <Briefcase className="text-gray-600" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900">Software Engineer</h4>
+                    <p className="text-gray-600">StartUp Co.</p>
+                    <p className="text-sm text-gray-500">2017 - 2020 · 3 years</p>
+                  </div>
                 </div>
               </div>
-            )}
-          </CardContent>
-        </Card>
+            </section>
+
+            {/* Education */}
+            <section className="mb-8">
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Education</h3>
+              <div className="flex gap-4">
+                <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                  <School className="text-gray-600" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900">Computer Science, BSc</h4>
+                  <p className="text-gray-600">University of Technology</p>
+                  <p className="text-sm text-gray-500">2013 - 2017</p>
+                </div>
+              </div>
+            </section>
+
+            {/* Social Links */}
+            <section>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Connect</h3>
+              <div className="flex gap-4">
+                <a href="#" className="text-gray-600 hover:text-blue-600">
+                  <LinkedinIcon size={24} />
+                </a>
+                <a href="#" className="text-gray-600 hover:text-blue-400">
+                  <Twitter size={24} />
+                </a>
+                <a href="#" className="text-gray-600 hover:text-gray-900">
+                  <Github size={24} />
+                </a>
+                <a href="#" className="text-gray-600 hover:text-blue-600">
+                  <Globe size={24} />
+                </a>
+              </div>
+            </section>
+          </div>
+        </div>
       </main>
     </div>
   );
 }
+
+export default App;

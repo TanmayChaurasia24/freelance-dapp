@@ -1,19 +1,22 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Search } from 'lucide-react';
+import { Briefcase } from 'lucide-react';
 
 export function HeroSection() {
   return (
-    <section className="text-center mb-12">
-      <h1 className="text-4xl font-bold mb-4">Find Your Next Remote Opportunity</h1>
-      <p className="text-xl mb-8">Discover remote jobs and freelance projects all in one place</p>
-      <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
-        <Input className="max-w-xs w-full" placeholder="Search jobs or projects" />
-        <Button className="w-full sm:w-auto">
-          <Search className="mr-2 h-4 w-4" /> Search
-        </Button>
+    <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-background border-b">
+    <div className="container mx-auto px-4 py-16 text-center">
+      <div className="flex justify-center mb-6">
+        <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center">
+          <Briefcase className="w-8 h-8 text-primary" />
+        </div>
       </div>
-    </section>
+      <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
+        Find Your Dream Remote Opportunity
+      </h1>
+      <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
+        Discover the best remote opportunities from top companies around the world
+      </p>
+    </div>
+  </div>
   )
 }
 
