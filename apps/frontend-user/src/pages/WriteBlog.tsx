@@ -58,7 +58,7 @@ export default function Home() {
     mode: "onTouched",
     resolver: zodResolver(imageformschema),
     defaultValues: {
-      prompt: "Enter the Prompt to generate the image",
+      prompt: "Enter the Prompt to generate the content",
     },
   });
 
@@ -68,8 +68,8 @@ export default function Home() {
     
   };
 
-  const GenerateImage = () => {
-    console.log("working!");
+  const GenerateContent = () => {
+    
   };
 
   return (
@@ -80,7 +80,7 @@ export default function Home() {
           <div className="w-full lg:w-[30vw] p-8 overflow-y-auto">
             <Form {...imageform}>
               <form
-                onSubmit={imageform.handleSubmit(GenerateImage)}
+                onSubmit={imageform.handleSubmit(GenerateContent)}
                 className="space-y-6"
               >
                 <FormField
@@ -91,7 +91,7 @@ export default function Home() {
                       <FormControl>
                         <Textarea
                           rows={7}
-                          placeholder="Enter your prompt here to generate an image..."
+                          placeholder="Enter your prompt here to generate content..."
                           className="resize-none text-black placeholder-slate-400"
                           {...field}
                         />
@@ -101,13 +101,13 @@ export default function Home() {
                   )}
                 />
                 <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Generating..." : "Generate Image"}
+                  {isLoading ? "Generating..." : "Generate Content"}
                 </Button>
               </form>
             </Form>
           </div>
           <div className="flex-1 p-8 overflow-y-auto">
-            <h1 className="text-2xl font-bold mb-4">Generated Image</h1>
+            <h1 className="text-2xl font-bold mb-4">Generated Content</h1>
             {imageUrl ? (
               <Card>
                 <CardContent className="p-4">
@@ -120,7 +120,7 @@ export default function Home() {
               </Card>
             ) : (
               <p className="text-gray-500">
-                No image generated yet.
+                No content generated yet.
               </p>
             )}
           </div>

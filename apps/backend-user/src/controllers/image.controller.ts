@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-export const generateContent = async (req: Request, res: Response) => {
+export const generateContent = async (req: Request, res: Response): Promise<any> => {
   const model = "@cf/meta/llama-3-8b-instruct";
   const { prompt }: { prompt: string } = req.body; // Use proper type for `prompt`
   
@@ -10,7 +10,7 @@ export const generateContent = async (req: Request, res: Response) => {
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${process.env.API_TOKEN}`, // Use environment variable
+          Authorization: `Bearer ${process.env.CLOUDFLARE_API_TOKEN}`, // Use environment variable
           "Content-Type": "application/json", // Missing Content-Type header
         },
         body: JSON.stringify({
@@ -21,7 +21,7 @@ export const generateContent = async (req: Request, res: Response) => {
             },
             {
               role: "user",
-              content: prompt,
+              content: `generate the image according to the user prompt do not create extremly detailed image quality and detailing of the image should be medium. user prompt is: ${prompt}`,
             },
           ],
         }),
