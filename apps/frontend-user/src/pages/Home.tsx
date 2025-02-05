@@ -3,41 +3,12 @@
 import { useState } from "react";
 import { Header } from "@/components/Header";
 import { HeroSection } from "@/components/HeroSection";
-import { FeaturedOpportunities } from "@/components/FeaturedOpportunities";
-import { SkillsFilter } from "@/components/SkillsFilter";
-import { JobsAndProjects } from "@/components/JobsAndProjects";
 import { HowItWorks } from "@/components/HowItWorks";
-import { Testimonials } from "@/components/Testimonials";
+
 import { Newsletter } from "@/components/Newsletter";
 import { BlogPost } from "@/components/BlogPost";
 import { WhyChooseUs } from "@/components/WhyChooseUs";
 import { Footer } from "@/components/Footer";
-
-
-const testimonials = [
-  {
-    id: 1,
-    name: "John Doe",
-    role: "Freelance Developer",
-    content:
-      "RemoteWorkHub has been a game-changer for my career. I've found amazing projects and clients here.",
-    
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    role: "Project Manager",
-    content:
-      "As an employer, I've hired top-notch talent through RemoteWorkHub. The quality of professionals here is outstanding.",
-  },
-  {
-    id: 3,
-    name: "Alex Johnson",
-    role: "UI/UX Designer",
-    content:
-      "The platform is user-friendly and the support team is always helpful. I've recommended RemoteWorkHub to all my colleagues.",
-  },
-];
 
 
 const blogPosts = [
@@ -117,8 +88,7 @@ export default function HomePage() {
       <main className="container mx-auto px-4 py-8">
         <HeroSection />
         <BlogPost blogPosts={blogPosts} />
-        <Testimonials testimonials={testimonials} />
-        <Newsletter />
+
         <HowItWorks />
         <WhyChooseUs />
       </main>

@@ -13,7 +13,8 @@ export function HeroSection() {
         Find Your Dream Remote Opportunity
       </h1>
       <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
-        Discover the best remote opportunities from top companies around the world
+      Write blogs, maintain your profile, and let AI handle your job search. 
+      We automatically create your resume and apply to matching positions.
       </p>
     </div>
   </div>

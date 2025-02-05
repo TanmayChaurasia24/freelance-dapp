@@ -12,7 +12,6 @@ export default function SignupPage() {
           <SignupForm />
         </div>
       </main>
-      <Footer />
     </div>
   )
 }
