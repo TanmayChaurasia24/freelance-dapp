@@ -46,9 +46,11 @@
     "react-hot-toast": "^2.5.1",
     "react-icons": "^5.4.0",
     "react-router-dom": "^7.1.1",
+    "react-toast": "^1.0.3",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
     "tinymce": "^7.6.0",
+    "tiptap": "^1.32.2",
     "tiptap-extension-resize-image": "^1.2.1",
     "zod": "^3.24.1"
   },
