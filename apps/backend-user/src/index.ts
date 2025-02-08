@@ -3,6 +3,7 @@ import connectdb from "./db";
 import user from "./routes/user.route";
 import images from "./routes/image.route"
 import jobs from "./routes/job.route"
+import blogs from "./routes/blog.route"
 import cors from "cors";
 
 const port = 3000;
@@ -18,6 +19,7 @@ connectdb();
 app.use("/api/auth", user);
 app.use("/api/image", images)
 app.use("/api/jobs", jobs)
+app.use("/api/blogs", blogs)
 
 
 app.listen(port, () => {

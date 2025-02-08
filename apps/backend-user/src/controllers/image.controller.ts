@@ -1,9 +1,14 @@
 import { Request, Response } from "express";
 
-export const generateContent = async (req: Request, res: Response): Promise<any> => {
+
+
+export const generateContent = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
   const model = "@cf/meta/llama-3-8b-instruct";
   const { prompt }: { prompt: string } = req.body; // Use proper type for `prompt`
-  
+
   try {
     const response = await fetch(
       `https://api.cloudflare.com/client/v4/accounts/a08822ecd78ffb3acede87da0e234c0e/ai/run/${model}`,
@@ -36,7 +41,6 @@ export const generateContent = async (req: Request, res: Response): Promise<any>
     const data = await response.json(); // Extract response body
 
     return res.status(200).json({ success: true, data });
-
   } catch (error: any) {
     console.error("Error generating content:", error);
 
@@ -47,3 +51,8 @@ export const generateContent = async (req: Request, res: Response): Promise<any>
     });
   }
 };
+
+
+
+
+

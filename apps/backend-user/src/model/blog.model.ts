@@ -11,14 +11,18 @@ const blogschema = new mongoose.Schema({
         required: true,
         trim: true,
     },
+    thumbnail: {
+        type: String,
+    },
+    author: {
+        type: String,
+        trim: true,
+        require: true,
+    },
     date: {
         type: Date,
         default: Date.now
-    },
-    Comments: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Comment'
-    }]
+    }
 });
 
 export default mongoose.model("Post", blogschema)

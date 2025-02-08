@@ -88,7 +88,6 @@ export default function HomePage() {
       <main className="container mx-auto px-4 py-8">
         <HeroSection />
         <BlogPost blogPosts={blogPosts} />
-
         <HowItWorks />
         <WhyChooseUs />
       </main>

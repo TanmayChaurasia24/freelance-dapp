@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { Header } from "@/components/Header";
 import RichTextEditor from "@/components/RichTextEditor";
@@ -36,7 +36,7 @@ function extractTextFromHTML(html: any) {
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
-  post: z.string().refine(
+  content: z.string().refine(
     (value) => {
       return extractTextFromHTML(value).trim().length >= 5;
     },
@@ -45,6 +45,7 @@ const formSchema = z.object({
     }
   ),
   thumbnail: z.string(),
+  author: z.string()
 });
 
 const imageformschema = z.object({
@@ -55,14 +56,17 @@ export default function BlogEditor() {
   const [content, setContent] = useState<string | null>(null);
   const [contentOnEditor, setContentOnEditor] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [uploadimageurl, setuploadimageurl] = useState<string | undefined>("");
+  const [isuploading, setisuploading] = useState<boolean>(false);
 
   const form = useForm({
     mode: "onTouched",
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
-      post: "",
+      content: "",
       thumbnail: "",
+      author: "none",
     },
   });
 
@@ -71,8 +75,23 @@ export default function BlogEditor() {
     resolver: zodResolver(imageformschema),
   });
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
-    console.log("blog content: ", data.post);
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    data.thumbnail = uploadimageurl || "no image provided";
+    data.author = "tanmay kumar chaurasia"
+    console.log(data);
+
+    const response = await axios.post("http://localhost:3000/api/blogs/create", data, {
+      headers: {
+        "Content-Type": "application/json",
+      }
+    })
+    
+    if(!response) {
+      console.log("no respoonse from backend");
+      return;      
+    }
+    console.log(response.data );
+    
   };
 
   const GenerateContent = async () => {
@@ -105,6 +124,34 @@ export default function BlogEditor() {
 
       toast.success("content copied!");
     }
+  };
+
+  const uploadfilecloud = async (e: any) => {
+    setisuploading(true);
+    const file = e.target.files[0];
+
+    if (!file) {
+      console.log("no file");
+      return;
+    }
+
+    const data = new FormData();
+    data.append("file", file);
+    data.append("upload_preset", "freemotely_image_uploads");
+    data.append("cloud_name", "dltrkpswg");
+
+    const response = await fetch(
+      "https://api.cloudinary.com/v1_1/dltrkpswg/image/upload",
+      {
+        method: "POST",
+        body: data,
+      }
+    );
+
+    const imageurl = await response.json();
+    console.log(imageurl.url);
+    await setuploadimageurl(imageurl.url);
+    setisuploading(false)
   };
 
   return (
@@ -240,9 +287,15 @@ export default function BlogEditor() {
                           Thumbnail Image
                         </FormLabel>
                         <FormControl>
-                          <button className="ml-3 bg-gradient-to-tr from-black to-blue-500 text-transparent bg-clip-text font-semibold">
-                            Upload
-                          </button>
+                          {isuploading ? (
+                            <div>uploading...</div>
+                          ) : (
+                            <input
+                              type="file"
+                              onChange={(e) => uploadfilecloud(e)}
+                              className="ml-3 bg-gradient-to-tr from-black to-blue-500 text-transparent bg-clip-text font-semibold"
+                            ></input>
+                          )}
                         </FormControl>
                       </FormItem>
                     )}
@@ -268,7 +321,7 @@ export default function BlogEditor() {
                   />
                   <FormField
                     control={form.control}
-                    name="post"
+                    name="content"
                     render={({ field }: any) => (
                       <FormItem>
                         <FormLabel className="text-base font-semibold">
