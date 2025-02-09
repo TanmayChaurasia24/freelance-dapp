@@ -45,3 +45,21 @@ export const createBlog = async (req: Request, res: Response): Promise<any> => {
         })
     }
 }
+
+export const fetchAllBlog = async (req: Request, res: Response): Promise<any> => {
+    try {
+        const response = await post.find();
+        if(!response) {
+            return res.status(404).json({message: "No blog posts found."})
+        }
+        return res.status(201).json({
+            success: "true",
+            data: response
+        })
+    } catch (error: any) {
+        return res.status(500).json({
+            message: "error while fetching all the blogs",
+            error: error.message
+        })
+    }
+}
