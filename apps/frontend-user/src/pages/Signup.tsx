@@ -1,9 +1,20 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { SignupForm } from "@/components/SignupForm";
-import { LockKeyhole } from 'lucide-react';
+import { LockKeyhole } from "lucide-react";
+// Import the functions you need from the SDKs you need
+import { signInWithGithubPopup, signInWithGooglePopup } from "../utils/firebase.utils";
 
 export default function SignupPage() {
+  const logGoogleUser = async () => {
+    const response = await signInWithGooglePopup();
+    console.log(response);
+  };
+  const loggithubuser = async () => {
+    const response = await signInWithGithubPopup();
+    console.log(response);
+    
+  }
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -21,6 +32,12 @@ export default function SignupPage() {
               </p>
             </div>
             <SignupForm />
+            <div>
+              <button onClick={logGoogleUser}>Sign In With Google</button>
+            </div>
+            <div>
+              <button onClick={loggithubuser}>Sign In With github</button>
+            </div>
             <p className="text-center text-sm text-muted-foreground">
               Already have an account?{" "}
               <a href="/login" className="text-primary hover:underline">
