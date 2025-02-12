@@ -36,6 +36,7 @@ export function Header() {
     { href: "/jobs", label: "Jobs", icon: <Briefcase className="w-4 h-4" /> },
     { href: "/blogs", label: "Blogs", icon: <BookOpen className="w-4 h-4" /> },
     { href: "/write", label: "Write Blog", icon: <PenTool className="w-4 h-4" /> },
+    { href: "/create/resume", label: "Create Resume", icon: <PenTool className="w-4 h-4" /> },
   ];
 
   return (

@@ -6,7 +6,7 @@ export const generateContent = async (
   req: Request,
   res: Response
 ): Promise<any> => {
-  const model = "@cf/meta/llama-3-8b-instruct";
+  const model = process.env.CONTENT_GENERATION_MODEL;
   const { prompt }: { prompt: string } = req.body; // Use proper type for `prompt`
 
   try {

@@ -11,6 +11,7 @@ import LoginPage from "./pages/Login";
 import ProfilePage from "./pages/profile";
 import TokenPurchase from "./pages/Purchase";
 import WriteBlog from "./pages/WriteBlog";
+import CreateResume from "./pages/CreateResume";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/purchase" element={<TokenPurchase />} />
         <Route path="/write" element={<WriteBlog />} />
+        <Route path="/create/resume" element={<CreateResume />} />
       </Routes>
     </BrowserRouter>
     </>
