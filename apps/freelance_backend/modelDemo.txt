@@ -1,0 +1,119 @@
+freelancers model
+{
+    "_id": "ObjectId('...')",
+    "userId": "ObjectId('...')",  
+    "name": "John Doe",
+    "email": "johndoe@example.com",
+    "profileImage": "https://supabase.storage/.../profile.jpg",
+    "bio": "Full-stack developer with 5+ years of experience...",
+    "skills": ["React", "Next.js", "Go", "MongoDB"],
+    "hourlyRate": 50,
+    "portfolio": [
+      {
+        "title": "E-commerce Website",
+        "link": "https://myecommerce.com",
+        "description": "Built a scalable e-commerce platform using Next.js and Go."
+      }
+    ],
+    "experience": [
+      {
+        "company": "Google",
+        "position": "Software Engineer",
+        "duration": "2 years"
+      }
+    ],
+    "education": [
+      {
+        "institution": "MIT",
+        "degree": "B.Sc Computer Science",
+        "year": 2020
+      }
+    ],
+    "reviews": [
+      {
+        "clientId": "ObjectId('...')",
+        "rating": 4.8,
+        "comment": "Great work on my project!"
+      }
+    ],
+    "availability": "part-time",
+    "location": "New York, USA",
+    "socialLinks": {
+      "github": "https://github.com/johndoe",
+      "linkedin": "https://linkedin.com/in/johndoe"
+    },
+    "createdAt": "ISODate('2024-02-13T12:00:00Z')",
+    "updatedAt": "ISODate('2024-02-14T12:00:00Z')"
+  }
+
+
+  clients for hiring model
+  {
+    "_id": "ObjectId('...')",
+    "userId": "ObjectId('...')",
+    "name": "Jane Smith",
+    "email": "janesmith@example.com",
+    "company": "Acme Corp",
+    "profileImage": "https://supabase.storage/.../profile.jpg",
+    "projectsPosted": [
+      {
+        "projectId": "ObjectId('...')",
+        "title": "Build a SaaS Dashboard"
+      }
+    ],
+    "reviewsGiven": [
+      {
+        "freelancerId": "ObjectId('...')",
+        "rating": 5,
+        "comment": "Highly skilled developer!"
+      }
+    ],
+    "createdAt": "ISODate('2024-02-13T12:00:00Z')"
+  }
+
+  
+  projects model
+  {
+    "_id": "ObjectId('...')",
+    "clientId": "ObjectId('...')",
+    "title": "Build a Mobile App",
+    "description": "I need a cross-platform mobile app using React Native.",
+    "budget": 2000,
+    "skillsRequired": ["React Native", "Firebase"],
+    "applications": [
+      {
+        "freelancerId": "ObjectId('...')",
+        "proposal": "I have built 5 similar apps. Let's discuss further.",
+        "bidAmount": 1800,
+        "status": "pending"
+      }
+    ],
+    "status": "open",
+    "createdAt": "ISODate('2024-02-13T12:00:00Z')"
+  }
+
+  proposal model
+  {
+    "_id": "ObjectId('...')",
+    "projectId": "ObjectId('...')",
+    "freelancerId": "ObjectId('...')",
+    "coverLetter": "I have 5 years of experience in React Native development...",
+    "bidAmount": 1500,
+    "status": "pending",
+    "createdAt": "ISODate('2024-02-13T12:00:00Z')"
+  }
+
+  transaction model
+  {
+    "_id": "ObjectId('...')",
+    "clientId": "ObjectId('...')",
+    "freelancerId": "ObjectId('...')",
+    "amount": 1500,
+    "paymentMethod": "crypto",
+    "currency": "USDC",
+    "status": "completed",
+    "createdAt": "ISODate('2024-02-13T12:00:00Z')"
+  }
+  
+
+  
