@@ -10,13 +10,15 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var ClientCollection *mongo.Collection
+var (
+	CompanyCollection *mongo.Collection
+)
 
 func ConnectDB() {
 	MongoURI := os.Getenv("MONGO_URI")
-
+	fmt.Println("mongo uri: ", MongoURI)
 	clientOptions := options.Client().ApplyURI(MongoURI)
-
+	fmt.Println("client options: ", clientOptions)
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		log.Fatal(err)
@@ -24,10 +26,14 @@ func ConnectDB() {
 
 	err = client.Ping(context.TODO(), nil)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("❌ Failed to connect to the database:", err)
 	}
 
-	fmt.Println("Connected to MongoDB!")
+	fmt.Println("✅ Connected to the database successfully!")
 
-	ClientCollection = client.Database("freelanceDB").Collection("clients")
+	CompanyCollection = client.Database("prohirecompanies").Collection("companies")
+}
+
+func GetCompanyCollection() *mongo.Collection {
+	return CompanyCollection
 }

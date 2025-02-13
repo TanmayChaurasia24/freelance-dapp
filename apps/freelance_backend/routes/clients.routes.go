@@ -3,9 +3,9 @@ package routes
 import (
 	controller "golang-freelance_backend/controllers"
 
-	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
-func ClientsRoutes(incommingRoutes *gin.Engine) {
-	incommingRoutes.POST("/create", controller.GenerateClient())
+func ClientsRoutes(mux *http.ServeMux) {
+	mux.HandleFunc("/create", controller.GenerateClient)
 }
