@@ -1,26 +1,35 @@
 package main
 
 import (
+	"fmt"
 	"golang-freelance_backend/database"
 	"golang-freelance_backend/routes"
+	"log"
+	"net/http"
 	"os"
 
-	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("Error loading .env file: %v", err)
+	}
 	port := os.Getenv("PORT")
-
 	if port == "" {
 		port = "8080"
 	}
 
 	database.ConnectDB()
 
-	router := gin.New()
-	router.Use(gin.Logger())
+	mux := http.NewServeMux()
 
-	routes.ClientsRoutes(router)
+	routes.ClientsRoutes(mux)
 
-	router.Run(":" + port)
+	fmt.Println("🚀 Server is running on port:", port)
+	err = http.ListenAndServe(":"+port, mux)
+	if err != nil {
+		log.Fatal("❌ Failed to start server:", err)
+	}
 }
